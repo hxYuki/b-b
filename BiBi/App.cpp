@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 
 #include "App.h"
 #include "MainPage.h"
@@ -12,6 +12,7 @@ using namespace Windows::UI::Xaml::Controls;
 using namespace Windows::UI::Xaml::Navigation;
 using namespace BiBi;
 using namespace BiBi::implementation;
+using namespace Windows::Storage::Streams;
 
 /// <summary>
 /// Initializes the singleton application object.  This is the first line of authored code
@@ -21,6 +22,7 @@ App::App()
 {
     InitializeComponent();
     Suspending({ this, &App::OnSuspending });
+
 
 #if defined _DEBUG && !defined DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION
     UnhandledException([this](IInspectable const&, UnhandledExceptionEventArgs const& e)
@@ -117,3 +119,4 @@ void App::OnNavigationFailed(IInspectable const&, NavigationFailedEventArgs cons
 {
     throw hresult_error(E_FAIL, hstring(L"Failed to load Page ") + e.SourcePageType().Name);
 }
+
