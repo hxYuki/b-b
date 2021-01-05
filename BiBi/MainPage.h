@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "MainPage.g.h"
 #include "Network.h"
@@ -14,6 +14,9 @@ namespace winrt::BiBi::implementation
         void MyProperty(int32_t value);
 
         void ClickHandler(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::RoutedEventArgs const& args);
+
+        // 消息处理函数
+        void MessageReceived(Windows::Networking::Sockets::DatagramSocket const& /* sender */, Windows::Networking::Sockets::DatagramSocketMessageReceivedEventArgs const& args);
     };
 }
 

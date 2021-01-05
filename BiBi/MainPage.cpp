@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "MainPage.h"
 #include "MainPage.g.cpp"
 using namespace winrt::Windows::Storage::Streams;
@@ -12,8 +12,17 @@ namespace winrt::BiBi::implementation
     MainPage::MainPage()
     {
         InitializeComponent();
+
+        //auto func = (&MainPage::MessageReceived);
+           
+        // 启动Socket
+        UdpClient.StartServer();
+
+        // 注册处理函数
+        UdpClient.RegisterCastProcess(ProtocolTokens::OnlineAnnouncement, this, &MainPage::MessageReceived);
     }
 
+#pragma region Deprecated Code
     //int MainPage::StartServer()
     //{
     //    /*try
@@ -53,6 +62,9 @@ namespace winrt::BiBi::implementation
     //    notify.ShowAsync();
     //}
 
+#pragma endregion
+
+    
     int32_t MainPage::MyProperty()
     {
         throw hresult_not_implemented();
@@ -67,8 +79,15 @@ namespace winrt::BiBi::implementation
     {
         // 启动Udp客户端
         //auto re = StartServer();
-        UdpClient.StartServer();
         UdpClient.AnnounceAsync();
         //Announce();
+    }
+    void MainPage::MessageReceived(Windows::Networking::Sockets::DatagramSocket const&, Windows::Networking::Sockets::DatagramSocketMessageReceivedEventArgs const& args)
+    {
+        OutputDebugString(L"received: \n");
+        DataReader dataReader{ args.GetDataReader() };
+        winrt::hstring msgReceived{ dataReader.ReadString(dataReader.UnconsumedBufferLength()) };
+        OutputDebugString(msgReceived.c_str());
+        OutputDebugString(L"\n");
     }
 }

@@ -1,4 +1,4 @@
-#include<pch.h>
+﻿#include<pch.h>
 #include"Network.h"
 #include <winrt/Windows.UI.Composition.h>
 using namespace winrt;
@@ -8,14 +8,14 @@ using namespace winrt::Windows::Storage::Streams;
 
 namespace winrt::BiBi::implementation {
 
-    // 应用启动时启动Udp监听服务器
+    
     void UdpClientStrt::StartServer()
     {
         try
         {
-            OutputDebugString(L"excuted");
+            //OutputDebugString(L"excuted");
             // 收到数据报回调函数
-            this->m_serverDatagramSocket.MessageReceived({ this, &UdpClientStrt::MessageReceived });
+            //this->m_serverDatagramSocket.MessageReceived({ this, &UdpClientStrt::MessageReceived });
 
             // 开始监听
             this->m_serverDatagramSocket.BindServiceNameAsync(L"22229");
@@ -30,7 +30,7 @@ namespace winrt::BiBi::implementation {
         }
     }
 
-    // 组播设备存在
+    
     IAsyncAction UdpClientStrt::AnnounceAsync()
     {
         try
@@ -39,7 +39,7 @@ namespace winrt::BiBi::implementation {
             // 获取输出流
             IOutputStream outputStream = co_await m_serverDatagramSocket.GetOutputStreamAsync(multicastHostName, L"22229");
     
-            winrt::hstring msg{ L"b&b:ALOHA!" };
+            winrt::hstring msg{ L"b&b:"+ProtocolTokens::OnlineAnnouncement+L":imhere" };
             // 向流中写入数据
             DataWriter dataWriter{ outputStream };
             // 存在消息
@@ -54,22 +54,45 @@ namespace winrt::BiBi::implementation {
             throw webErrorStatus != Windows::Networking::Sockets::SocketErrorStatus::Unknown ? winrt::to_hstring((int32_t)webErrorStatus) : winrt::to_hstring(ex.to_abi());
         }
     }
+#pragma region Deprecated Code
+    /*void UdpClientStrt::MessageReceived(Windows::Networking::Sockets::DatagramSocket const& sender, Windows::Networking::Sockets::DatagramSocketMessageReceivedEventArgs const& args)
+    {*/
+    //// 读取数据
+    //DataReader dataReader{ args.GetDataReader() };
+    //winrt::hstring msgReceived{ dataReader.ReadString(dataReader.UnconsumedBufferLength()) };
+    //// 转换为wstring view
+    //auto ms = std::wstring_view(msgReceived);
+    //// 取协议头
+    //if (ms.substr(0, 3) != L"b&b")
+    //    return;
+    //// 取token
+    //auto token = ms.substr(4, 5);
+    //// 寻找token
+    //auto i = registry.find(hstring(token));
+    //if (i == registry.end())
+    //    return;
 
-    IAsyncAction UdpClientStrt::MessageReceived(Windows::Networking::Sockets::DatagramSocket const&  sender , Windows::Networking::Sockets::DatagramSocketMessageReceivedEventArgs const& args)
-    {
-        // 读取数据
-        DataReader dataReader{ args.GetDataReader() };
+    //// 对已注册函数进行调用
+    //for (const auto& cb : i->second) {
+    //    // 取消息内容，传入回调
+    //    cb(hstring(ms.substr(10)));
+    //}
+//}
 
-        winrt::hstring msgReceived{ dataReader.ReadString(dataReader.UnconsumedBufferLength()) };
+//winrt::hstring implementation::UdpClientStrt::RegisterCast(winrt::hstring token, Windows::Foundation::IAsyncAction callback)
+//{
+//    auto i = registry.find(token);
 
-        // 使用对话框显示收到的消息
-        winrt::Windows::UI::Xaml::Controls::ContentDialog notify;
-        notify.Title(box_value(L"New message"));
-        notify.Content(box_value(msgReceived));
-        notify.CloseButtonText(L"OK");
-        // 显示对话框
-        auto dialogResult = co_await notify.ShowAsync();
-    }
+//    // token存在，将函数附加到列表尾
+//    if (i != registry.end()) 
+//        //i->second.push_back(callback);
+//    
+//    // token不存在，初始化列表
+//    //registry[token] = { callback };
+//    return token;
+//}
+
+#pragma endregion
 
     UdpClientStrt UdpClient = UdpClientStrt();
 

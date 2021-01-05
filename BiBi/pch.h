@@ -19,3 +19,6 @@
 #include <winrt/Windows.Networking.Sockets.h>
 #include <winrt/Windows.Storage.Streams.h>
 #include <sstream>
+#include <unordered_map>
+#include <vector>
+#include <functional>
