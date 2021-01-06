@@ -31,7 +31,7 @@ namespace winrt::BiBi::implementation {
     }
 
     
-    IAsyncAction UdpClientStrt::AnnounceAsync()
+    IAsyncAction UdpClientStrt::AnnounceAsync(const winrt::hstring& uid)
     {
         try
         {
@@ -39,7 +39,7 @@ namespace winrt::BiBi::implementation {
             // 获取输出流
             IOutputStream outputStream = co_await m_serverDatagramSocket.GetOutputStreamAsync(multicastHostName, L"22229");
     
-            winrt::hstring msg{ L"b&b:"+ProtocolTokens::OnlineAnnouncement+L":imhere" };
+            winrt::hstring msg{ L"b&b:"+ProtocolTokens::OnlineAnnouncement+L":["+uid+L"]imhere" };
             // 向流中写入数据
             DataWriter dataWriter{ outputStream };
             // 存在消息

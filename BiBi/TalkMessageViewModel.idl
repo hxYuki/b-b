@@ -1,0 +1,11 @@
+﻿import "TalkMessage.idl";
+
+namespace BiBi
+{
+    runtimeclass TalkMessageViewModel
+    {
+        TalkMessageViewModel();
+        TalkMessage TalkMessage{ get; };
+        Windows.Foundation.Collections.IObservableVector<TalkMessage> TalkHistory{ get; };
+    }
+}

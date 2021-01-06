@@ -3,7 +3,9 @@
 namespace winrt::BiBi::implementation {
 	namespace ProtocolTokens {
 		const winrt::hstring OnlineAnnouncement{ L"ALOHA" };
-
+		const winrt::hstring OfflineAnnouncement{ L"ADDIO" };
+		const winrt::hstring MessageSend{ L"MESSG" };
+		const winrt::hstring CallMake{ L"ACALL" };
 	}
 
 	struct UdpClientStrt {
@@ -20,7 +22,7 @@ namespace winrt::BiBi::implementation {
 		// 应用启动时启动Udp监听服务器
 		void StartServer();
 		// 组播设备存在
-		winrt::Windows::Foundation::IAsyncAction AnnounceAsync();
+		winrt::Windows::Foundation::IAsyncAction AnnounceAsync(const winrt::hstring&);
 		// 注册消息处理
 		// 模板参数 S：用于适配各个页面struct类型
 		template<typename S>

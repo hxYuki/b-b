@@ -1,0 +1,9 @@
+﻿namespace BiBi
+{
+    runtimeclass TalkMessage : Windows.UI.Xaml.Data.INotifyPropertyChanged
+    {
+        TalkMessage();
+        String Username;
+        String Content;
+    }
+}

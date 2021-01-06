@@ -9,5 +9,19 @@
 
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
         <Button x:Name="myButton" Click="ClickHandler">Click Me</Button>
+        <StackPanel Orientation="Vertical">
+            <ListView x:Name="talkHistoryListView" ItemsSource="{x:Bind TalkMessageVM.TalkHistory}">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="local:TalkMessage">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="{x:Bind Username}" IsTextSelectionEnabled="True" FontWeight="Bold"
+                                       FontSize="36" Foreground="Aqua"/>
+                            <TextBlock Text="{x:Bind Content}" IsTextSelectionEnabled="True" Margin="40, 0, 0, 20"
+                                       FontSize="32" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
     </StackPanel>
 </Page>

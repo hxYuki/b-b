@@ -1,9 +1,11 @@
+﻿import "TalkMessageViewModel.idl";
+
 namespace BiBi
 {
     [default_interface]
     runtimeclass MainPage : Windows.UI.Xaml.Controls.Page
     {
         MainPage();
-        Int32 MyProperty;
+        TalkMessageViewModel TalkMessageVM{ get; };
     }
 }
