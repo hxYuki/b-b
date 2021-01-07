@@ -134,6 +134,14 @@
       <DependentUpon>TalkMessageViewModel.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="UserData.h">
+      <DependentUpon>UserData.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UserDataViewModel.h">
+      <DependentUpon>UserDataViewModel.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -177,6 +185,14 @@
       <DependentUpon>TalkMessageViewModel.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="UserData.cpp">
+      <DependentUpon>UserData.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UserDataViewModel.cpp">
+      <DependentUpon>UserDataViewModel.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl">
@@ -189,6 +205,12 @@
       <SubType>Designer</SubType>
     </Midl>
     <Midl Include="TalkMessageViewModel.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="UserData.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="UserDataViewModel.idl">
       <SubType>Designer</SubType>
     </Midl>
   </ItemGroup>

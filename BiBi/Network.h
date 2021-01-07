@@ -1,11 +1,51 @@
 ﻿#pragma once
 #include<pch.h>
 namespace winrt::BiBi::implementation {
-	namespace ProtocolTokens {
-		const winrt::hstring OnlineAnnouncement{ L"ALOHA" };
-		const winrt::hstring OfflineAnnouncement{ L"ADDIO" };
-		const winrt::hstring MessageSend{ L"MESSG" };
-		const winrt::hstring CallMake{ L"ACALL" };
+	namespace Protocol {
+		namespace Tokens {
+			// 协议标识常量
+			const winrt::hstring OnlineAnnouncement{ L"ALOHA" };
+			const winrt::hstring OfflineAnnouncement{ L"ADDIO" };
+			const winrt::hstring MessageSend{ L"MESSG" };
+			const winrt::hstring CallMake{ L"ACALL" };
+
+		}
+
+		// 协议标识枚举
+		enum class MessageType {
+			ErrorType = -1, Online, Offline, MessageSend, CallMake
+		};
+		
+		// 消息
+		struct Message
+		{
+			// 发送人ID
+			winrt::hstring const& uid;
+			// 发送人用户名
+			winrt::hstring const& username;
+			// 消息类型
+			MessageType const& type;
+			// 消息内容
+			winrt::hstring const& content;
+		};
+
+		// 消息构造器
+		struct MessageBuilder {
+
+			MessageBuilder(winrt::hstring const& uid, winrt::hstring const& username);
+			
+			// 将内容打包为消息，写入输出流
+			winrt::Windows::Foundation::IAsyncOperation<bool> SendToStream(winrt::Windows::Storage::Streams::IOutputStream& outputStream, MessageType type, winrt::hstring const& content);
+
+			// 将接收信息解析为消息
+			static Message ReadFrom(Windows::Storage::Streams::DataReader& source);
+		private:
+			winrt::hstring const& uid;
+			winrt::hstring const& username;
+
+			static winrt::hstring type2token(MessageType type);
+			static MessageType token2type(winrt::hstring const& token);
+		};
 	}
 
 	struct UdpClientStrt {
@@ -43,5 +83,4 @@ namespace winrt::BiBi::implementation {
 	extern UdpClientStrt UdpClient;
 
 	
-
 }

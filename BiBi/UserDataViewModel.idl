@@ -1,0 +1,12 @@
+﻿import "UserData.idl";
+
+namespace BiBi
+{
+    runtimeclass UserDataViewModel 
+    {
+        UserDataViewModel();
+        
+        UserData UserData{ get; };
+        Windows.Foundation.Collections.IObservableVector<UserData> UserList{ get; };
+    }
+}

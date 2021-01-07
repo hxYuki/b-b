@@ -15,6 +15,12 @@
     <Midl Include="TalkMessageViewModel.idl">
       <Filter>ViewModels</Filter>
     </Midl>
+    <Midl Include="UserData.idl">
+      <Filter>Models</Filter>
+    </Midl>
+    <Midl Include="UserDataViewModel.idl">
+      <Filter>ViewModels</Filter>
+    </Midl>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />

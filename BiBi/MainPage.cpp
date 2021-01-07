@@ -14,7 +14,7 @@ namespace winrt::BiBi::implementation
 	{
 		InitializeComponent();
 
-		//talkHistoryListView().ItemsSource(this->currentHistory);
+		
 		//读取或初始化ID
 		DeviceInitOrRead();
 
@@ -22,7 +22,7 @@ namespace winrt::BiBi::implementation
 		UdpClient.StartServer();
 
 		// 注册处理函数
-		UdpClient.RegisterCastProcess(ProtocolTokens::OnlineAnnouncement, this, &MainPage::MessageReceived);
+		UdpClient.RegisterCastProcess(Protocol::Tokens::OnlineAnnouncement, this, &MainPage::MessageReceived);
 
 		// 测试： 载入聊天记录
 		LoadHistory(L"");
@@ -32,9 +32,23 @@ namespace winrt::BiBi::implementation
 		return m_talkMessageVM;
 	}
 
+	BiBi::UserDataViewModel MainPage::UserDataVM()
+	{
+		return m_userDataVM;
+	}
+
 	const winrt::hstring& MainPage::GetUID()
 	{
-		return uId;
+		return m_uId;
+	}
+
+	void MainPage::SetUID(const winrt::hstring& UID)
+	{
+		// 不允许后续更改UID
+		if (UID == L"")
+			m_uId = UID;
+		else OutputDebugString(L"fuck shit");
+
 	}
 
 	void MainPage::LoadHistory(const winrt::hstring& uid)
@@ -43,16 +57,6 @@ namespace winrt::BiBi::implementation
 			make<BiBi::implementation::TalkMessage>(L"B",L"Bye.") };
 		array_view his(ah);
 		TalkMessageVM().TalkHistory().ReplaceAll(his);
-		
-	}
-
-	void MainPage::SetUID(const winrt::hstring& UID)
-	{
-		// 不允许后续更改UID
-		if (UID == L"")
-			uId = UID;
-		else OutputDebugString(L"fuck shit");
-
 	}
 
 	Windows::Foundation::IAsyncAction MainPage::DeviceInitOrRead()
@@ -147,9 +151,11 @@ namespace winrt::BiBi::implementation
 	void MainPage::MessageReceived(Windows::Networking::Sockets::DatagramSocket const&, Windows::Networking::Sockets::DatagramSocketMessageReceivedEventArgs const& args)
 	{
 		OutputDebugString(L"received: \n");
-		DataReader dataReader{ args.GetDataReader() };
-		winrt::hstring msgReceived{ dataReader.ReadString(dataReader.UnconsumedBufferLength()) };
-		OutputDebugString(msgReceived.c_str());
-		OutputDebugString(L"\n");
+		/*DataReader dataReader{ args.GetDataReader() };
+		winrt::hstring msgReceived{ dataReader.ReadString(dataReader.UnconsumedBufferLength()) };*/
+		auto msg = Protocol::MessageBuilder::ReadFrom(args.GetDataReader());
+
+		//OutputDebugString(msgReceived.c_str());
+		//OutputDebugString(L"\n");
 	}
 }

@@ -1,0 +1,12 @@
+﻿namespace BiBi
+{
+    
+    runtimeclass UserData : Windows.UI.Xaml.Data.INotifyPropertyChanged
+    {
+        UserData();
+        String UserId;
+        String Username;
+        String Addr;
+        String Avatar;
+    }
+}

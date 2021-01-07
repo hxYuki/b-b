@@ -9,18 +9,21 @@ namespace winrt::BiBi::implementation
     {
         MainPage();
         BiBi::TalkMessageViewModel TalkMessageVM();
+        BiBi::UserDataViewModel UserDataVM();
 
     private:
         BiBi::TalkMessageViewModel m_talkMessageVM;
+        BiBi::UserDataViewModel m_userDataVM;
         //using TalkMessage = std::pair<winrt::hstring, winrt::hstring>;
         //using TalkHistory = std::vector<decltype(box_value(TalkMessage{}))> ;
 
         //decltype(single_threaded_observable_vector(std::move(TalkHistory{}))) currentHistory = single_threaded_observable_vector(std::move(TalkHistory{}));
         // 用户ID
-        winrt::hstring uId{L""};
+        winrt::hstring m_uId{L""};
         void SetUID(const winrt::hstring&);
 
-        // 测试聊天记录
+        
+        //Protocol::MessageBuilder messageBuilder;
 
     public:
         const winrt::hstring& GetUID();
@@ -32,7 +35,6 @@ namespace winrt::BiBi::implementation
         // 读取或初始化设备标识
         // 用于区分用户
         Windows::Foundation::IAsyncAction DeviceInitOrRead();
-
 
 
         void ClickHandler(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::RoutedEventArgs const& args);

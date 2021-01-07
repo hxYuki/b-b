@@ -38,15 +38,20 @@ namespace winrt::BiBi::implementation {
             Windows::Networking::HostName multicastHostName{ L"229.2.2.9" };
             // 获取输出流
             IOutputStream outputStream = co_await m_serverDatagramSocket.GetOutputStreamAsync(multicastHostName, L"22229");
-    
-            winrt::hstring msg{ L"b&b:"+ProtocolTokens::OnlineAnnouncement+L":["+uid+L"]imhere" };
-            // 向流中写入数据
-            DataWriter dataWriter{ outputStream };
-            // 存在消息
-            dataWriter.WriteString(msg);
+            
             // 发送
-            co_await dataWriter.StoreAsync();
-            dataWriter.DetachStream();
+            Protocol::MessageBuilder mb(uid, L"");
+            if (co_await mb.SendToStream(outputStream, Protocol::MessageType::Online, L"imhere")) {
+                // 处理结果
+            }
+            //winrt::hstring msg{ L"b&b:"+Protocol::Tokens::OnlineAnnouncement+L":["+uid+L"]imhere" };
+            //// 向流中写入数据
+            //DataWriter dataWriter{ outputStream };
+            //// 存在消息
+            //dataWriter.WriteString(msg);
+            //// 发送
+            //co_await dataWriter.StoreAsync();
+            //dataWriter.DetachStream();
         }
         catch (winrt::hresult_error const& ex)
         {
@@ -96,4 +101,100 @@ namespace winrt::BiBi::implementation {
 
     UdpClientStrt UdpClient = UdpClientStrt();
 
+
+    Protocol::MessageBuilder::MessageBuilder(winrt::hstring const& uid, winrt::hstring const& username) : uid{ uid }, username{ username }
+    {
+    }
+
+    winrt::Windows::Foundation::IAsyncOperation<bool> Protocol::MessageBuilder::SendToStream(winrt::Windows::Storage::Streams::IOutputStream& outputStream, MessageType type, winrt::hstring const& content)
+    {
+        try
+        {
+            // 拼装消息
+            winrt::hstring msg{ L"b&b:" + type2token(type) + L":[" + uid + L":" + username + L"]" + content };
+            // 写入消息
+            DataWriter dataWriter{ outputStream };
+            dataWriter.WriteString(msg);
+            // 存储发送
+            co_await dataWriter.StoreAsync();
+            dataWriter.DetachStream();
+            // 成功
+            co_return true;
+        }
+        catch (winrt::hresult_error const& ex)
+        {
+            // 失败
+            co_return false;
+        }
+
+    }
+
+    Protocol::Message Protocol::MessageBuilder::ReadFrom(Windows::Storage::Streams::DataReader& source)
+    {
+        // 读取数据
+        winrt::hstring msgReceived{ source.ReadString(source.UnconsumedBufferLength()) };
+
+        auto ms = std::wstring_view(msgReceived);
+        // 取协议头
+        if (ms.substr(0, 3) != L"b&b")
+            return Message{ L"",L"",MessageType::ErrorType,L"" };
+        // 取token
+        auto token = ms.substr(4, 5);
+        auto type = token2type(token.data());
+        // token不正确
+        if (type == MessageType::ErrorType)
+            return Message{ L"",L"",MessageType::ErrorType,L"" };
+
+        //Message msg;
+        try
+        {
+            // 解析信息
+            auto splitPos = ms.find(L":", 8);
+            auto endPos = ms.find(L"]", splitPos);
+            auto uid = ms.substr(11, splitPos);
+            auto uname = ms.substr(splitPos + 1, endPos - splitPos);
+            auto content = ms.substr(endPos + 1);
+            return Message{ uid.data(),uname.data(),type,content.data() };
+        }
+        catch (const std::exception&)
+        {
+            // 信息损坏
+            return Message{ L"",L"",MessageType::ErrorType,L"" };
+        }
+        
+        //return msg;
+    }
+
+    winrt::hstring Protocol::MessageBuilder::type2token(Protocol::MessageType type)
+    {
+        switch (type)
+        {
+        case MessageType::Online:
+            return Protocol::Tokens::OnlineAnnouncement;
+        case MessageType::Offline:
+            return Protocol::Tokens::OfflineAnnouncement;
+        case MessageType::CallMake:
+            return Protocol::Tokens::CallMake;
+        case MessageType::MessageSend:
+            return Protocol::Tokens::MessageSend;
+        default:
+            return L"Error";
+        }
+    }
+
+    Protocol::MessageType Protocol::MessageBuilder::token2type(winrt::hstring const& token)
+    {
+        if (token == Protocol::Tokens::OnlineAnnouncement)
+            return MessageType::Online;
+        else if (token == Protocol::Tokens::OfflineAnnouncement)
+            return MessageType::Offline;
+        else if (token == Protocol::Tokens::MessageSend)
+            return MessageType::MessageSend;
+        else if (token == Protocol::Tokens::CallMake)
+            return MessageType::CallMake;
+
+        else return MessageType::ErrorType;
+    }
+
 }
+
