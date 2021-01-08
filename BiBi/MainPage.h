@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "TalkMessageViewModel.h"
+#include "UserDataViewModel.h"
 #include "MainPage.g.h"
 #include "Network.h"
 namespace winrt::BiBi::implementation
@@ -14,10 +15,10 @@ namespace winrt::BiBi::implementation
     private:
         BiBi::TalkMessageViewModel m_talkMessageVM;
         BiBi::UserDataViewModel m_userDataVM;
-        //using TalkMessage = std::pair<winrt::hstring, winrt::hstring>;
-        //using TalkHistory = std::vector<decltype(box_value(TalkMessage{}))> ;
+        
 
-        //decltype(single_threaded_observable_vector(std::move(TalkHistory{}))) currentHistory = single_threaded_observable_vector(std::move(TalkHistory{}));
+        const winrt::Windows::Networking::HostName MulticastHost{ L"229.2.2.9" };
+        const winrt::hstring Port{ L"22229" };
         // 用户ID
         winrt::hstring m_uId{L""};
         void SetUID(const winrt::hstring&);
@@ -36,11 +37,13 @@ namespace winrt::BiBi::implementation
         // 用于区分用户
         Windows::Foundation::IAsyncAction DeviceInitOrRead();
 
+        // 发现域内用户
+        winrt::Windows::Foundation::IAsyncAction FindPeer();
 
         void ClickHandler(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::RoutedEventArgs const& args);
 
         // 消息处理函数
-        void MessageReceived(Windows::Networking::Sockets::DatagramSocket const& /* sender */, Windows::Networking::Sockets::DatagramSocketMessageReceivedEventArgs const& args);
+        Windows::Foundation::IAsyncAction MessageReceived(Windows::Networking::Sockets::DatagramSocket const& /* sender */, Windows::Networking::Sockets::DatagramSocketMessageReceivedEventArgs const& args);
     };
 }
 

@@ -8,7 +8,10 @@ namespace winrt::BiBi::implementation {
 			const winrt::hstring OfflineAnnouncement{ L"ADDIO" };
 			const winrt::hstring MessageSend{ L"MESSG" };
 			const winrt::hstring CallMake{ L"ACALL" };
-
+		}
+		namespace Kinds {
+			const winrt::hstring PeerSeeking{ L"ImHere" };
+			const winrt::hstring PeerGreeting{ L"John Smith" };
 		}
 
 		// 协议标识枚举
@@ -48,7 +51,7 @@ namespace winrt::BiBi::implementation {
 		};
 	}
 
-	struct UdpClientStrt {
+	struct Networker {
 	private:
 		// Udp Socket
 		Windows::Networking::Sockets::DatagramSocket m_serverDatagramSocket;
@@ -61,6 +64,10 @@ namespace winrt::BiBi::implementation {
 	public:
 		// 应用启动时启动Udp监听服务器
 		void StartServer();
+
+		// 获取目标输出流
+		Windows::Foundation::IAsyncOperation<Windows::Storage::Streams::IOutputStream> GetTargetStream(Windows::Networking::HostName const& host, winrt::hstring const& port);
+
 		// 组播设备存在
 		winrt::Windows::Foundation::IAsyncAction AnnounceAsync(const winrt::hstring&);
 		// 注册消息处理
@@ -80,7 +87,7 @@ namespace winrt::BiBi::implementation {
 	};
 
 	// 全局公用Socket
-	extern UdpClientStrt UdpClient;
+	extern Networker WorkerClient;
 
 	
 }

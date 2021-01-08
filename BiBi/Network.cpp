@@ -9,7 +9,7 @@ using namespace winrt::Windows::Storage::Streams;
 namespace winrt::BiBi::implementation {
 
     
-    void UdpClientStrt::StartServer()
+    void Networker::StartServer()
     {
         try
         {
@@ -30,8 +30,13 @@ namespace winrt::BiBi::implementation {
         }
     }
 
+    Windows::Foundation::IAsyncOperation<Windows::Storage::Streams::IOutputStream> Networker::GetTargetStream(Windows::Networking::HostName const& host, winrt::hstring const& port)
+    {
+        return m_serverDatagramSocket.GetOutputStreamAsync(host, port);
+    }
+
     
-    IAsyncAction UdpClientStrt::AnnounceAsync(const winrt::hstring& uid)
+    IAsyncAction Networker::AnnounceAsync(const winrt::hstring& uid)
     {
         try
         {
@@ -99,7 +104,7 @@ namespace winrt::BiBi::implementation {
 
 #pragma endregion
 
-    UdpClientStrt UdpClient = UdpClientStrt();
+    Networker WorkerClient = Networker();
 
 
     Protocol::MessageBuilder::MessageBuilder(winrt::hstring const& uid, winrt::hstring const& username) : uid{ uid }, username{ username }

@@ -4,9 +4,11 @@
     runtimeclass UserData : Windows.UI.Xaml.Data.INotifyPropertyChanged
     {
         UserData();
+        //UserData(String userId, String username, String addr, String avatar, Boolean online);
         String UserId;
         String Username;
         String Addr;
         String Avatar;
+        //Boolean Online;
     }
 }

@@ -19,10 +19,21 @@ namespace winrt::BiBi::implementation
 		DeviceInitOrRead();
 
 		// 启动Socket
-		UdpClient.StartServer();
+		WorkerClient.StartServer();
 
 		// 注册处理函数
-		UdpClient.RegisterCastProcess(Protocol::Tokens::OnlineAnnouncement, this, &MainPage::MessageReceived);
+		WorkerClient.RegisterCastProcessAsync(Protocol::Tokens::OnlineAnnouncement, this, &MainPage::MessageReceived);
+
+		// 延迟操作
+		Windows::System::Threading::ThreadPoolTimer::CreateTimer([&](winrt::Windows::System::Threading::ThreadPoolTimer const& source) {
+			FindPeer();
+
+			}, std::chrono::seconds(1));
+
+		// 耗时操作
+		/*Windows::System::Threading::ThreadPool::RunAsync([&]() {
+
+			});*/
 
 		// 测试： 载入聊天记录
 		LoadHistory(L"");
@@ -145,16 +156,65 @@ namespace winrt::BiBi::implementation
 	{
 		// 启动Udp客户端
 		//auto re = StartServer();
-		UdpClient.AnnounceAsync(GetUID());
+		WorkerClient.AnnounceAsync(GetUID());
 		//Announce();
 	}
-	void MainPage::MessageReceived(Windows::Networking::Sockets::DatagramSocket const&, Windows::Networking::Sockets::DatagramSocketMessageReceivedEventArgs const& args)
+	winrt::Windows::Foundation::IAsyncAction MainPage::FindPeer()
 	{
+		auto out = co_await WorkerClient.GetTargetStream(MulticastHost, Port);
+		winrt::BiBi::implementation::Protocol::MessageBuilder mb(GetUID(), L"");
+
+		co_await mb.SendToStream(out, Protocol::MessageType::Online, Protocol::Kinds::PeerSeeking);
+	}
+	winrt::Windows::Foundation::IAsyncAction MainPage::MessageReceived(Windows::Networking::Sockets::DatagramSocket const&, Windows::Networking::Sockets::DatagramSocketMessageReceivedEventArgs const& args)
+	{
+		winrt::BiBi::implementation::Protocol::MessageBuilder mb(GetUID(), L"");
 		OutputDebugString(L"received: \n");
+		
 		/*DataReader dataReader{ args.GetDataReader() };
 		winrt::hstring msgReceived{ dataReader.ReadString(dataReader.UnconsumedBufferLength()) };*/
 		auto msg = Protocol::MessageBuilder::ReadFrom(args.GetDataReader());
+		if (msg.uid == GetUID())
+			co_return;
+		switch (msg.type)
+		{
+		case Protocol::MessageType::Online:
+			// 收到其他用户上线消息
+			if (msg.content == Protocol::Kinds::PeerSeeking) {
+				// 添加至列表
+				auto d = UserData();
+				d.UserId(msg.uid);
+				d.Username(msg.username);
+				d.Addr(args.RemoteAddress().ToString());
+				//d.Online(true);
+				//auto td = winrt::;
+				/*UserDataVM().UserList()*/
+				UserDataVM().UserList().Insert(msg.uid, make<BiBi::implementation::UserData>(d));
 
+				// 发送问候
+				auto out = co_await WorkerClient.GetTargetStream(args.RemoteAddress(), Port);
+				mb.SendToStream(out, Protocol::MessageType::Online, Protocol::Kinds::PeerGreeting);
+			}
+
+			// 收到问候
+			else if (msg.content == Protocol::Kinds::PeerGreeting) {
+				// 添加至列表
+				auto d = UserData();
+				d.UserId(msg.uid);
+				d.Username(msg.username);
+				d.Addr(args.RemoteAddress().ToString());
+				//d.Online(true);
+				//auto t = UserData(d);
+
+				//UserDataVM().UserList().Append(make<winrt::BiBi::UserData>(d));
+				UserDataVM().UserList().Insert(msg.uid, make<UserData>(d));
+
+			}
+			break;
+
+		default:
+			break;
+		}
 		//OutputDebugString(msgReceived.c_str());
 		//OutputDebugString(L"\n");
 	}
