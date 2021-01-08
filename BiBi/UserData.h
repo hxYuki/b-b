@@ -6,7 +6,7 @@ namespace winrt::BiBi::implementation
     struct UserData : UserDataT<UserData>
     {
         UserData() = default;
-        //UserData(hstring userId, hstring username, hstring addr, hstring avatar, bool online);
+        UserData(hstring userId, hstring username, hstring addr, hstring avatar, bool online);
         hstring UserId();
         void UserId(hstring const& value);
         hstring Username();
@@ -15,8 +15,8 @@ namespace winrt::BiBi::implementation
         void Addr(hstring const& value);
         hstring Avatar();
         void Avatar(hstring const& value);
-        /*bool Online();
-        void Online(bool value);*/
+        bool Online();
+        void Online(bool value);
         winrt::event_token PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& handler);
         void PropertyChanged(winrt::event_token const& token) noexcept;
 
@@ -25,7 +25,7 @@ namespace winrt::BiBi::implementation
         hstring m_username;
         hstring m_addr;
         hstring m_avatar;
-        //bool m_online{false};
+        bool m_online;
 
         winrt::event<Windows::UI::Xaml::Data::PropertyChangedEventHandler> m_propertyChanged;
     };

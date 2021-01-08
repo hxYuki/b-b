@@ -182,14 +182,14 @@ namespace winrt::BiBi::implementation
 			// 收到其他用户上线消息
 			if (msg.content == Protocol::Kinds::PeerSeeking) {
 				// 添加至列表
-				auto d = UserData();
-				d.UserId(msg.uid);
+				//auto d = UserData();
+				/*d.UserId(msg.uid);
 				d.Username(msg.username);
-				d.Addr(args.RemoteAddress().ToString());
+				d.Addr(args.RemoteAddress().ToString());*/
 				//d.Online(true);
 				//auto td = winrt::;
 				/*UserDataVM().UserList()*/
-				UserDataVM().UserList().Insert(msg.uid, make<BiBi::implementation::UserData>(d));
+				UserDataVM().UserList().Append(make<BiBi::implementation::UserData>(msg.uid, msg.username, args.RemoteAddress().ToString(), L"", true));
 
 				// 发送问候
 				auto out = co_await WorkerClient.GetTargetStream(args.RemoteAddress(), Port);
@@ -199,15 +199,15 @@ namespace winrt::BiBi::implementation
 			// 收到问候
 			else if (msg.content == Protocol::Kinds::PeerGreeting) {
 				// 添加至列表
-				auto d = UserData();
-				d.UserId(msg.uid);
+				//auto d = UserData();
+				/*d.UserId(msg.uid);
 				d.Username(msg.username);
-				d.Addr(args.RemoteAddress().ToString());
+				d.Addr(args.RemoteAddress().ToString());*/
 				//d.Online(true);
 				//auto t = UserData(d);
 
 				//UserDataVM().UserList().Append(make<winrt::BiBi::UserData>(d));
-				UserDataVM().UserList().Insert(msg.uid, make<UserData>(d));
+				//UserDataVM().UserList().Insert(msg.uid, make<UserData>(d));
 
 			}
 			break;

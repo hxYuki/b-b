@@ -7,6 +7,6 @@ namespace BiBi
         UserDataViewModel();
         
         UserData UserData{ get; };
-        Windows.Foundation.Collections.IObservableMap<String, UserData> UserList{ get; };
+        Windows.Foundation.Collections.IObservableVector<UserData> UserList{ get; };
     }
 }

@@ -9,11 +9,11 @@ namespace winrt::BiBi::implementation
         UserDataViewModel();
 
         BiBi::UserData UserData();
-        Windows::Foundation::Collections::IObservableMap<hstring, BiBi::UserData> UserList();
+        Windows::Foundation::Collections::IObservableVector<BiBi::UserData> UserList();
 
     private:
         BiBi::UserData m_userData;
-        Windows::Foundation::Collections::IObservableMap<hstring, BiBi::UserData> m_userList;
+        Windows::Foundation::Collections::IObservableVector<BiBi::UserData> m_userList;
     };
 }
 namespace winrt::BiBi::factory_implementation

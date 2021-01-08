@@ -5,9 +5,9 @@
 
 namespace winrt::BiBi::implementation
 {
-    /*UserData::UserData(hstring userId, hstring username, hstring addr, hstring avatar, bool online):m_userId{ userId },m_username{username}, m_addr{addr},m_avatar{avatar}, m_online{online}
+    UserData::UserData(hstring userId, hstring username, hstring addr, hstring avatar, bool online):m_userId{ userId },m_username{username}, m_addr{addr},m_avatar{avatar}, m_online{online}
     {
-    }*/
+    }
     hstring UserData::UserId()
     {
         return m_userId;
@@ -56,7 +56,7 @@ namespace winrt::BiBi::implementation
             m_propertyChanged(*this, Windows::UI::Xaml::Data::PropertyChangedEventArgs{ L"Avatar" });
         }
     }
-    /*bool UserData::Online()
+    bool UserData::Online()
     {
         return m_online;
     }
@@ -67,7 +67,7 @@ namespace winrt::BiBi::implementation
             m_online = value;
             m_propertyChanged(*this, Windows::UI::Xaml::Data::PropertyChangedEventArgs{ L"Online" });
         }
-    }*/
+    }
     winrt::event_token UserData::PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& handler)
     {
         return m_propertyChanged.add(handler);
