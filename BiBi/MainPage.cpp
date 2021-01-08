@@ -56,7 +56,7 @@ namespace winrt::BiBi::implementation
 	void MainPage::SetUID(const winrt::hstring& UID)
 	{
 		// 不允许后续更改UID
-		if (UID == L"")
+		if (UID != L"")
 			m_uId = UID;
 		else OutputDebugString(L"fuck shit");
 
@@ -162,20 +162,21 @@ namespace winrt::BiBi::implementation
 	winrt::Windows::Foundation::IAsyncAction MainPage::FindPeer()
 	{
 		auto out = co_await WorkerClient.GetTargetStream(MulticastHost, Port);
-		winrt::BiBi::implementation::Protocol::MessageBuilder mb(GetUID(), L"");
+		auto debug = GetUID();
+		winrt::BiBi::implementation::Protocol::MessageBuilder mb(debug, L"");
 
 		co_await mb.SendToStream(out, Protocol::MessageType::Online, Protocol::Kinds::PeerSeeking);
 	}
 	winrt::Windows::Foundation::IAsyncAction MainPage::MessageReceived(Windows::Networking::Sockets::DatagramSocket const&, Windows::Networking::Sockets::DatagramSocketMessageReceivedEventArgs const& args)
 	{
-		winrt::BiBi::implementation::Protocol::MessageBuilder mb(GetUID(), L"");
+		auto debug = GetUID();
+		winrt::BiBi::implementation::Protocol::MessageBuilder mb(debug, L"");
 		OutputDebugString(L"received: \n");
 		
 		/*DataReader dataReader{ args.GetDataReader() };
 		winrt::hstring msgReceived{ dataReader.ReadString(dataReader.UnconsumedBufferLength()) };*/
 		auto msg = Protocol::MessageBuilder::ReadFrom(args.GetDataReader());
-		
-		if (msg.uid == GetUID())
+		if (msg.uid == debug)
 			co_return;
 		switch (msg.type)
 		{
