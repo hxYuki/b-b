@@ -22,14 +22,15 @@ namespace winrt::BiBi::implementation {
 		// 消息
 		struct Message
 		{
+			//Message() = default;
 			// 发送人ID
-			winrt::hstring const& uid;
+			winrt::hstring const uid;
 			// 发送人用户名
-			winrt::hstring const& username;
+			winrt::hstring const username;
 			// 消息类型
-			MessageType const& type;
+			MessageType const type;
 			// 消息内容
-			winrt::hstring const& content;
+			winrt::hstring const content;
 		};
 
 		// 消息构造器

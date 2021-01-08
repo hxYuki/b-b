@@ -48,7 +48,7 @@ namespace winrt::BiBi::implementation
 		return m_userDataVM;
 	}
 
-	const winrt::hstring& MainPage::GetUID()
+	winrt::hstring MainPage::GetUID()
 	{
 		return m_uId;
 	}
@@ -174,6 +174,7 @@ namespace winrt::BiBi::implementation
 		/*DataReader dataReader{ args.GetDataReader() };
 		winrt::hstring msgReceived{ dataReader.ReadString(dataReader.UnconsumedBufferLength()) };*/
 		auto msg = Protocol::MessageBuilder::ReadFrom(args.GetDataReader());
+		
 		if (msg.uid == GetUID())
 			co_return;
 		switch (msg.type)
@@ -205,6 +206,7 @@ namespace winrt::BiBi::implementation
 				d.Addr(args.RemoteAddress().ToString());*/
 				//d.Online(true);
 				//auto t = UserData(d);
+				UserDataVM().UserList().Append(make<BiBi::implementation::UserData>(msg.uid, msg.username, args.RemoteAddress().ToString(), L"", true));
 
 				//UserDataVM().UserList().Append(make<winrt::BiBi::UserData>(d));
 				//UserDataVM().UserList().Insert(msg.uid, make<UserData>(d));

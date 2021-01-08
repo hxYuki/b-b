@@ -27,7 +27,7 @@ namespace winrt::BiBi::implementation
         //Protocol::MessageBuilder messageBuilder;
 
     public:
-        const winrt::hstring& GetUID();
+        winrt::hstring GetUID();
 
 
         // 载入聊天记录

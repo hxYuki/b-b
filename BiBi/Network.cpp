@@ -145,7 +145,7 @@ namespace winrt::BiBi::implementation {
             return Message{ L"",L"",MessageType::ErrorType,L"" };
         // 取token
         auto token = ms.substr(4, 5);
-        auto type = token2type(token.data());
+        auto type = token2type(std::wstring(token).c_str());
         // token不正确
         if (type == MessageType::ErrorType)
             return Message{ L"",L"",MessageType::ErrorType,L"" };
@@ -154,12 +154,13 @@ namespace winrt::BiBi::implementation {
         try
         {
             // 解析信息
-            auto splitPos = ms.find(L":", 8);
+            auto startPos = ms.find(L"[", 9);
+            auto splitPos = ms.find(L":", 10);
             auto endPos = ms.find(L"]", splitPos);
-            auto uid = ms.substr(11, splitPos);
-            auto uname = ms.substr(splitPos + 1, endPos - splitPos);
+            auto uid = ms.substr(11, splitPos - startPos - 1);
+            auto uname = ms.substr(splitPos + 1, endPos - splitPos - 1);
             auto content = ms.substr(endPos + 1);
-            return Message{ uid.data(),uname.data(),type,content.data() };
+            return Message{ std::wstring(uid).c_str(),std::wstring(uname).c_str(),type,std::wstring(content).c_str() };
         }
         catch (const std::exception&)
         {
