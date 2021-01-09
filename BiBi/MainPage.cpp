@@ -29,6 +29,17 @@ namespace winrt::BiBi::implementation
 			FindPeer();
 
 			}, std::chrono::seconds(1));
+		//循环广播在线信息
+		Windows::System::Threading::ThreadPoolTimer::CreatePeriodicTimer(
+			[&](winrt::Windows::System::Threading::ThreadPoolTimer const& source)
+				{
+				//先置离线
+					for (int i = 0; i < UserDataVM().UserList().Size(); i++) {
+							UserDataVM().UserList().GetAt(i).Online(false);
+					}
+					//有回应再置在线
+					FindPeer();
+				}, std::chrono::seconds(10));
 
 		// 耗时操作
 		/*Windows::System::Threading::ThreadPool::RunAsync([&]() {
@@ -60,6 +71,16 @@ namespace winrt::BiBi::implementation
 			m_uId = UID;
 		else OutputDebugString(L"fuck shit");
 
+	}
+	// 发送消息
+	Windows::Foundation::IAsyncAction MainPage::SendMessage(winrt::hstring hostname,winrt::hstring content)
+	{
+		Windows::Networking::HostName host{ hostname };
+		auto out = co_await WorkerClient.GetTargetStream(host, Port);
+		auto debug = GetUID();
+		winrt::BiBi::implementation::Protocol::MessageBuilder mb(debug, L"");
+
+		co_await mb.SendToStream(out, Protocol::MessageType::MessageSend,content);
 	}
 
 	void MainPage::LoadHistory(const winrt::hstring& uid)
@@ -180,7 +201,7 @@ namespace winrt::BiBi::implementation
 			co_return;
 		switch (msg.type)
 		{
-		case Protocol::MessageType::Online:
+			case Protocol::MessageType::Online:
 			// 收到其他用户上线消息
 			if (msg.content == Protocol::Kinds::PeerSeeking) {
 				// 添加至列表
@@ -207,6 +228,15 @@ namespace winrt::BiBi::implementation
 				d.Addr(args.RemoteAddress().ToString());*/
 				//d.Online(true);
 				//auto t = UserData(d);
+				//遍历查找置为在线
+				for (int i = 0; i < UserDataVM().UserList().Size(); i++){
+					if (UserDataVM().UserList().GetAt(i).UserId() == msg.uid) {
+						UserDataVM().UserList().GetAt(i).Online(true);
+						//已经置在线则不用新添此用户
+						co_return;
+					}
+				}
+				//若没有找到则新增用户
 				UserDataVM().UserList().Append(make<BiBi::implementation::UserData>(msg.uid, msg.username, args.RemoteAddress().ToString(), L"", true));
 
 				//UserDataVM().UserList().Append(make<winrt::BiBi::UserData>(d));
@@ -214,7 +244,15 @@ namespace winrt::BiBi::implementation
 
 			}
 			break;
+			case Protocol::MessageType::Offline:
 
+				break;
+			case Protocol::MessageType::CallMake:
+				break;
+			case Protocol::MessageType::MessageSend:
+				//收到消息添加到未读消息列表
+				m_unreadMessage.emplace_back( msg.uid, msg.content);
+				break;
 		default:
 			break;
 		}
