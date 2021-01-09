@@ -183,6 +183,10 @@ namespace winrt::BiBi::implementation {
             return Protocol::Tokens::CallMake;
         case MessageType::MessageSend:
             return Protocol::Tokens::MessageSend;
+        case MessageType::GroupMessageSend:
+            return Protocol::Tokens::GroupMessageSend;
+        case MessageType::GroupInvite:
+            return Protocol::Tokens::GroupInvite;
         default:
             return L"Error";
         }
@@ -198,7 +202,10 @@ namespace winrt::BiBi::implementation {
             return MessageType::MessageSend;
         else if (token == Protocol::Tokens::CallMake)
             return MessageType::CallMake;
-
+        else if (token == Protocol::Tokens::GroupMessageSend)
+            return MessageType::GroupMessageSend;
+        else if (token == Protocol::Tokens::GroupInvite)
+            return MessageType::GroupInvite;
         else return MessageType::ErrorType;
     }
 

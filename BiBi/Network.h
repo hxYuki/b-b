@@ -7,6 +7,8 @@ namespace winrt::BiBi::implementation {
 			const winrt::hstring OnlineAnnouncement{ L"ALOHA" };
 			const winrt::hstring OfflineAnnouncement{ L"ADDIO" };
 			const winrt::hstring MessageSend{ L"MESSG" };
+			const winrt::hstring GroupMessageSend{ L"GPMES" };
+			const winrt::hstring GroupInvite{ L"GPINV" };
 			const winrt::hstring CallMake{ L"ACALL" };
 		}
 		namespace Kinds {
@@ -16,7 +18,7 @@ namespace winrt::BiBi::implementation {
 
 		// 协议标识枚举
 		enum class MessageType {
-			ErrorType = -1, Online, Offline, MessageSend, CallMake
+			ErrorType = -1, Online, Offline, MessageSend, GroupMessageSend, GroupInvite, CallMake
 		};
 		
 		// 消息
@@ -90,5 +92,4 @@ namespace winrt::BiBi::implementation {
 	// 全局公用Socket
 	extern Networker WorkerClient;
 
-	
 }
