@@ -16,6 +16,9 @@ namespace winrt::BiBi::implementation
         void Content(winrt::hstring const& value);
         winrt::event_token PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& handler);
         void PropertyChanged(winrt::event_token const& token) noexcept;
+        winrt::BiBi::implementation::TalkMessage& winrt::BiBi::implementation::TalkMessage::operator =(const winrt::BiBi::implementation::TalkMessage & c) {
+                return *this;
+        }
 
     private:
         winrt::hstring m_username;

@@ -35,6 +35,8 @@ namespace winrt::BiBi::implementation
         Windows::Foundation::IAsyncAction SendMessage(winrt::hstring hostname, winrt::hstring content);
         // 载入聊天记录
         void LoadHistory(const winrt::hstring& uid);
+        // 已读消息
+        Windows::Foundation::IAsyncAction readMessage(hstring uid);
 
         // 读取或初始化设备标识
         // 用于区分用户

@@ -82,13 +82,56 @@ namespace winrt::BiBi::implementation
 
 		co_await mb.SendToStream(out, Protocol::MessageType::MessageSend,content);
 	}
-
+	// 加载历史记录
 	void MainPage::LoadHistory(const winrt::hstring& uid)
 	{
 		const std::array<BiBi::TalkMessage, 2> ah{ make<BiBi::implementation::TalkMessage>(L"A",L"Hello!"),
 			make<BiBi::implementation::TalkMessage>(L"B",L"Bye.") };
 		array_view his(ah);
 		TalkMessageVM().TalkHistory().ReplaceAll(his);
+	}
+	// 已读消息
+	Windows::Foundation::IAsyncAction MainPage::readMessage(hstring uid)
+	{
+		// 提取uid的未读消息
+		std::vector<TalkMessage> tm;
+		for (int i = 0; i < m_unreadMessage.size();i++) {
+			if (m_unreadMessage[i].Username() == uid) {
+				// 提取未读消息
+				tm.emplace_back(m_unreadMessage[i].Username(), m_unreadMessage[i].Content());
+				// 删除已加载未读消息
+				m_unreadMessage.erase(m_unreadMessage.begin()+i);
+				i--;
+			}
+		}
+		// 将uid的消息编码成字符串
+		//编码后是这个样子        ␔Content1␔Content2␔Content3␔Content4
+		hstring uid_show_data;
+		for (int i = 0; i < tm.size(); i++) {
+			uid_show_data =L"␔"+ tm[i].Content();
+		}
+		// 应用数据目录
+		StorageFolder dataFolder = ApplicationData::Current().LocalFolder();
+
+		// 判断uid的历史记录是否存在
+		auto f = (co_await dataFolder.TryGetItemAsync(L"history\\"+uid+L".his")).as<StorageFile>();
+		if (f == nullptr) {
+			// 文件中没有历史记录
+			// 创建文件
+			auto nf = co_await dataFolder.CreateFileAsync(L"history\\" + uid + L".his");
+			// 保存uid的历史记录
+			co_await Windows::Storage::FileIO::WriteTextAsync(nf, uid_show_data);
+		}
+		else
+		{
+			// 从文件中读取已有历史记录
+			auto res = co_await FileIO::ReadTextAsync(f);
+			// 已有历史记录和新未读消息拼接
+			uid_show_data =  res + uid_show_data;
+			// 保存uid的历史记录
+			co_await Windows::Storage::FileIO::WriteTextAsync(f, uid_show_data);
+		}
+		// 显示消息代码  待写 在 uid_show_data 里
 	}
 
 	Windows::Foundation::IAsyncAction MainPage::DeviceInitOrRead()
