@@ -5,6 +5,11 @@
 
 namespace winrt::BiBi::implementation
 {
+    BiBi::implementation::TalkMessage::TalkMessage() {}
+    TalkMessage::TalkMessage(const TalkMessage& value) : m_username{ value.m_username }, m_content{value.m_content }
+    {
+
+    }
     BiBi::implementation::TalkMessage::TalkMessage(winrt::hstring const& username, winrt::hstring const& content) : m_username{username}, m_content{content}
     {
     }
