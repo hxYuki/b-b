@@ -15,7 +15,8 @@ namespace winrt::BiBi::implementation
     private:
         BiBi::TalkMessageViewModel m_talkMessageVM;
         BiBi::UserDataViewModel m_userDataVM;
-        
+        // 未读消息列表
+        std::vector<TalkMessage> m_unreadMessage;
 
         const winrt::Windows::Networking::HostName MulticastHost{ L"229.2.2.9" };
         const winrt::hstring Port{ L"22229" };
@@ -30,6 +31,8 @@ namespace winrt::BiBi::implementation
         winrt::hstring GetUID();
 
 
+        // 发送消息
+        Windows::Foundation::IAsyncAction SendMessage(winrt::hstring hostname, winrt::hstring content);
         // 载入聊天记录
         void LoadHistory(const winrt::hstring& uid);
 

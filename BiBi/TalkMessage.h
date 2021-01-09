@@ -6,7 +6,8 @@ namespace winrt::BiBi::implementation
 {
     struct TalkMessage : TalkMessageT<TalkMessage>
     {
-        TalkMessage() = default;
+        TalkMessage();
+        TalkMessage(const TalkMessage&);
         TalkMessage(winrt::hstring const& username, winrt::hstring const& content);
 
         winrt::hstring Username();
