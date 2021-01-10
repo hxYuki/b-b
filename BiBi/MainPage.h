@@ -9,7 +9,7 @@ namespace winrt::BiBi::implementation
     struct MainPage : MainPageT<MainPage>
     {
         MainPage();
-        void UpdateUserData(const winrt::Windows::System::Threading::ThreadPoolTimer& source);
+        void UpdateUserData();
         BiBi::TalkMessageViewModel TalkMessageVM();
         BiBi::UserDataViewModel UserDataVM();
 

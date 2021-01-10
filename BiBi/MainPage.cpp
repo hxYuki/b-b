@@ -26,7 +26,7 @@ namespace winrt::BiBi::implementation
 
 		// 注册处理函数
 		WorkerClient.RegisterCastProcessAsync(Protocol::Tokens::OnlineAnnouncement, this, &MainPage::MessageReceived);
-		UserDataVM().UserList().Append(make<UserData>(L"1234", L"LiMing",        L"1.png",     L"1.png",      true));
+		//UserDataVM().UserList().Append(make<UserData>(L"1234", L"LiMing",        L"1.png",     L"1.png",      true));
 
 		// 延迟操作
 		Windows::System::Threading::ThreadPoolTimer::CreateTimer([&](winrt::Windows::System::Threading::ThreadPoolTimer const& source) {
@@ -34,8 +34,16 @@ namespace winrt::BiBi::implementation
 			//                            UserData(String userId, String username, String addr, String avatar, Boolean online);
 			}, std::chrono::seconds(1));
 		//循环广播在线信息
-		/*Windows::System::Threading::ThreadPoolTimer::CreatePeriodicTimer(
-			&MainPage::UpdateUserData, std::chrono::seconds(10));*/
+		Windows::System::Threading::ThreadPoolTimer::CreatePeriodicTimer(
+			[&](const winrt::Windows::System::Threading::ThreadPoolTimer& source) {
+				////先置离线
+				//for (int i = 0; i < UserDataVM().UserList().Size(); i++) {
+				//	UserDataVM().UserList().GetAt(i).Online(false);
+				//}
+				////有回应再置在线
+				//FindPeer();
+				this->UpdateUserData();
+			}, std::chrono::seconds(10));
 
 		// 耗时操作
 		/*Windows::System::Threading::ThreadPool::RunAsync([&]() {
@@ -43,9 +51,9 @@ namespace winrt::BiBi::implementation
 			});*/
 
 		// 测试： 载入聊天记录
-		LoadHistory(L"");
+		//LoadHistory(L"");
 	}
-	void MainPage::UpdateUserData(const winrt::Windows::System::Threading::ThreadPoolTimer& source) {
+	void MainPage::UpdateUserData() {
 		//先置离线
 		for (int i = 0; i < UserDataVM().UserList().Size(); i++) {
 			UserDataVM().UserList().GetAt(i).Online(false);
