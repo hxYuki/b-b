@@ -18,6 +18,8 @@ namespace winrt::BiBi::implementation
         BiBi::UserDataViewModel m_userDataVM;
         // 未读消息列表
         std::vector<TalkMessage> m_unreadMessage;
+        // 当前打开聊天窗口对方uid
+        hstring current_uid;
 
         const winrt::Windows::Networking::HostName MulticastHost{ L"229.2.2.9" };
         const winrt::hstring Port{ L"22229" };
@@ -48,7 +50,11 @@ namespace winrt::BiBi::implementation
 #pragma endregion
 
         // 载入聊天记录
-        void LoadHistory(const winrt::hstring& uid);
+        Windows::Foundation::IAsyncAction LoadHistory(const winrt::hstring& uid);
+        // 已读消息
+        void readMessage(hstring uid);
+        // 保存历史记录
+        Windows::Foundation::IAsyncAction saveHistory(hstring uid);
 
         // 读取或初始化设备标识
         // 用于区分用户
@@ -59,7 +65,13 @@ namespace winrt::BiBi::implementation
 
         // 消息处理函数
         Windows::Foundation::IAsyncAction MessageReceived(Windows::Networking::Sockets::DatagramSocket const& /* sender */, Windows::Networking::Sockets::DatagramSocketMessageReceivedEventArgs const& args);
-        void Send_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::RoutedEventArgs const& e);
+        
+        // 页面加载事件
+        void OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventArgs const& args);
+        // 页面卸载事件
+        void OnNavigatingFrom(Windows::UI::Xaml::Navigation::NavigatingCancelEventArgs const& args);
+        //void PageUnloadedHandler(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::Navigation::NavigatingCancelEventArgs const& args);
+        
 #pragma endregion
         void Chat_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::RoutedEventArgs const& e);
     };
