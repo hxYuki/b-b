@@ -29,11 +29,16 @@ LEVEL = args.level
 if __name__ == '__main__':
     vclient = Video_Client(IP, PORT, LEVEL, VERSION)
     vserver = Video_Server(PORT, VERSION)
+
     aclient = Audio_Client(IP, PORT+1, VERSION)
     aserver = Audio_Server(PORT+1, VERSION)
+
     vclient.start()
     aclient.start()
-    time.sleep(1)    # make delay to start server
+
+    # make delay to start server
+    time.sleep(1)   
+
     vserver.start()
     aserver.start()
     while True:
@@ -42,6 +47,7 @@ if __name__ == '__main__':
         if not vserver.isAlive() or not vclient.isAlive():
             print("Video connection lost...")
             sys.exit(0)
+
         if not aserver.isAlive() or not aclient.isAlive():
             print("Audio connection lost...")
             sys.exit(0)

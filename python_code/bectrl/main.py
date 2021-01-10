@@ -13,10 +13,12 @@ host = ('0.0.0.0', 9991)
 soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 soc.bind(host)
 soc.listen(1)
+
 # 压缩比 1-100 数值越小，压缩比越高，图片质量损失越严重
 IMQUALITY = 50
 
 lock = threading.Lock()
+
 # 按键定义
 official_virtual_keys = {
     0x08: 'backspace',
@@ -92,6 +94,7 @@ official_virtual_keys = {
     0x58: 'x',
     0x59: 'y',
     0x5a: 'z',
+
     0x5b: 'left windows',
     0x5c: 'right windows',
     0x5d: 'applications',
@@ -108,6 +111,7 @@ official_virtual_keys = {
     0x69: '9',
     0x6a: '*',
     0x6b: '=',
+
     0x6c: 'separator',
     0x6d: '-',
     0x6e: 'decimal',
@@ -136,6 +140,7 @@ official_virtual_keys = {
     0x85: 'f22',
     0x86: 'f23',
     0x87: 'f24',
+
     0x90: 'num lock',
     0x91: 'scroll lock',
     0xa0: 'left shift',
@@ -162,6 +167,7 @@ official_virtual_keys = {
     0xb5: 'select media',
     0xb6: 'start application 1',
     0xb7: 'start application 2',
+
     0xbb: '+',
     0xbc: ',',
     0xbd: '-',
@@ -187,16 +193,19 @@ official_virtual_keys = {
 
 def ctrl(conn):
     '''
+
     读取控制命令，并在本机还原操作
     '''
     def Op(key, op, ox, oy):
         # print(key, op, ox, oy)
         if key == 1:
             if op == 100:
+
                 # 左键按下
                 mouse.move(ox, oy)
                 mouse.press(button=mouse.LEFT)
             elif op == 117:
+
                 # 左键弹起
                 x, y = mouse.get_position()
                 if ox != x or oy != y:
@@ -205,6 +214,7 @@ def ctrl(conn):
                     mouse.move(ox, oy)
                 mouse.release(button=mouse.LEFT)
         elif key == 2:
+
             # 滚轮事件
             if op == 0:
                 # 向上
@@ -214,6 +224,7 @@ def ctrl(conn):
                 # 向下
                 mouse.move(ox, oy)
                 mouse.wheel(delta=1)
+
         elif key == 3:
             # 鼠标右键
             if op == 100:
@@ -224,6 +235,7 @@ def ctrl(conn):
                 # 右键弹起
                 mouse.move(ox, oy)
                 mouse.release(button=mouse.RIGHT)
+
         else:
             k = official_virtual_keys.get(key)
             if k is not None:
@@ -231,6 +243,7 @@ def ctrl(conn):
                     keyboard.press(k)
                 elif op == 117: # 按键抬起
                     keyboard.release(k)
+
     try:
         base_len = 6
         while True:
@@ -244,11 +257,13 @@ def ctrl(conn):
             x = struct.unpack('>H', cmd[2:4])[0]
             y = struct.unpack('>H', cmd[4:6])[0]
             Op(key, op, x, y)
+
     except:
         return
 
 # 压缩后np图像
 img = None
+
 # 编码后的图像
 imbyt = None
 
@@ -257,6 +272,7 @@ def handle(conn):
     lock.acquire()
     if imbyt is None:
         imorg = np.asarray(ImageGrab.grab()) # 全屏截图
+         
          # 压缩编码
         _, imbyt= cv2.imencode(".jpg", imorg, [cv2.IMWRITE_JPEG_QUALITY,IMQUALITY])
         imnp = np.asarray(imbyt, np.uint8)
@@ -266,7 +282,9 @@ def handle(conn):
     conn.sendall(lenb)
     conn.sendall(imbyt)
     while True:
+        
         cv2.waitKey(100) # 等100纳秒
+        
         gb = ImageGrab.grab() # 全屏截图
         imgnpn = np.asarray(gb)
         _, timbyt= cv2.imencode(".jpg", imgnpn, [cv2.IMWRITE_JPEG_QUALITY,IMQUALITY])
@@ -282,14 +300,17 @@ def handle(conn):
         imbyt = timbyt
         img = imgnew
         # 无损压缩
+
         _, imb = cv2.imencode(".png", imgs)
         l1 = len(imbyt) # 原图像大小
         l2 = len(imb) # 差异图像大小
         if l1 > l2:
+
             # 传差异化图像
             lenb = struct.pack(">BI", 0, l2)
             conn.sendall(lenb)
             conn.sendall(imb)
+
         else:
             # 传原编码图像
             lenb = struct.pack(">BI", 1, l1)
@@ -299,5 +320,6 @@ def handle(conn):
 
 while True:
     conn, addr = soc.accept()
+    
     threading.Thread(target=handle, args=(conn,)).start() # 处理线程
     threading.Thread(target=ctrl, args=(conn,)).start() # 控制线程
