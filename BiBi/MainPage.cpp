@@ -26,16 +26,25 @@ namespace winrt::BiBi::implementation
 
 		// 注册处理函数
 		WorkerClient.RegisterCastProcessAsync(Protocol::Tokens::OnlineAnnouncement, this, &MainPage::MessageReceived);
-		UserDataVM().UserList().Append(make<UserData>(L"1234", L"LiMing",        L"1.png",     L"1.png",      true));
+		//UserDataVM().UserList().Append(make<UserData>(L"1234", L"LiMing",        L"1.png",     L"1.png",      true));
 
-		// 延迟操作
-		Windows::System::Threading::ThreadPoolTimer::CreateTimer([&](winrt::Windows::System::Threading::ThreadPoolTimer const& source) {
-			FindPeer();
-			//                            UserData(String userId, String username, String addr, String avatar, Boolean online);
-			}, std::chrono::seconds(1));
+		//// 延迟操作
+		//Windows::System::Threading::ThreadPoolTimer::CreateTimer([&](winrt::Windows::System::Threading::ThreadPoolTimer const& source) {
+		//	FindPeer();
+		//	//                            UserData(String userId, String username, String addr, String avatar, Boolean online);
+		//	}, std::chrono::seconds(1));
+		
 		//循环广播在线信息
-		/*Windows::System::Threading::ThreadPoolTimer::CreatePeriodicTimer(
-			&MainPage::UpdateUserData, std::chrono::seconds(10));*/
+		Windows::System::Threading::ThreadPoolTimer::CreatePeriodicTimer(
+			[&](const winrt::Windows::System::Threading::ThreadPoolTimer& source) {
+				////先置离线
+				//for (int i = 0; i < UserDataVM().UserList().Size(); i++) {
+				//	UserDataVM().UserList().GetAt(i).Online(false);
+				//}
+				////有回应再置在线
+				//FindPeer();
+				this->UpdateUserData();
+			}, std::chrono::seconds(10));
 
 		// 耗时操作
 		/*Windows::System::Threading::ThreadPool::RunAsync([&]() {
@@ -43,15 +52,27 @@ namespace winrt::BiBi::implementation
 			});*/
 
 		// 测试： 载入聊天记录
-		LoadHistory(L"");
+		//LoadHistory(L"");
 	}
-	void MainPage::UpdateUserData(const winrt::Windows::System::Threading::ThreadPoolTimer& source) {
+	void MainPage::UpdateUserData() {
 		//先置离线
 		for (int i = 0; i < UserDataVM().UserList().Size(); i++) {
 			UserDataVM().UserList().GetAt(i).Online(false);
 		}
 		//有回应再置在线
 		FindPeer();
+	}
+	void MainPage::AddUserData(const Protocol::Message& msg, hstring const& addr) {
+		//遍历查找置为在线
+		for (int i = 0; i < UserDataVM().UserList().Size(); i++) {
+			if (UserDataVM().UserList().GetAt(i).UserId() == msg.uid) {
+				UserDataVM().UserList().GetAt(i).Online(true);
+				//已经置在线则不用新添此用户
+				return;
+			}
+		}
+		//若没有找到则新增用户
+		UserDataVM().UserList().Append(make<BiBi::implementation::UserData>(msg.uid, msg.username, args.RemoteAddress().ToString(), L"", true));
 	}
 	BiBi::TalkMessageViewModel MainPage::TalkMessageVM()
 	{
@@ -320,6 +341,8 @@ namespace winrt::BiBi::implementation
 		auto msg = Protocol::MessageBuilder::ReadFrom(args.GetDataReader());
 		if (msg.uid == uid)
 			co_return;
+		OutputDebugString(L"UID = ");
+		OutputDebugString(msg.uid.c_str());
 		switch (msg.type)
 		{
 			case Protocol::MessageType::Online:
@@ -336,16 +359,7 @@ namespace winrt::BiBi::implementation
 			// 收到问候
 			else if (msg.content == Protocol::Kinds::PeerGreeting) {
 				// 添加至列表
-				//遍历查找置为在线
-				for (int i = 0; i < UserDataVM().UserList().Size(); i++){
-					if (UserDataVM().UserList().GetAt(i).UserId() == msg.uid) {
-						UserDataVM().UserList().GetAt(i).Online(true);
-						//已经置在线则不用新添此用户
-						co_return;
-					}
-				}
-				//若没有找到则新增用户
-				UserDataVM().UserList().Append(make<BiBi::implementation::UserData>(msg.uid, msg.username, args.RemoteAddress().ToString(), L"", true));
+				AddUserData(msg, args.RemoteAddress().ToString());
 
 				//UserDataVM().UserList().Append(make<winrt::BiBi::UserData>(d));
 				//UserDataVM().UserList().Insert(msg.uid, make<UserData>(d));
@@ -369,6 +383,7 @@ namespace winrt::BiBi::implementation
 				/// 群组ID为 “创建者ID-群组名”
 				/// 群组的用户名为用户列表
 				/// 群组的地址栏为空
+				/// // TODO: Wrap
 				UserDataVM().UserList().Append(make<UserData>(msg.uid + L"-"+ msg.username, msg.content, L"", L"", false));
 				break;
 			//case Protocol::MessageType::GroupAware:
