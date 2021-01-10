@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "MainPage.h"
 #include "MainPage.g.cpp"
+#include "String.h"
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;
 
@@ -87,7 +88,7 @@ namespace winrt::BiBi::implementation
 	{
 		const std::array<BiBi::TalkMessage, 2> ah{ make<BiBi::implementation::TalkMessage>(L"A",L"Hello!"),
 			make<BiBi::implementation::TalkMessage>(L"B",L"Bye.") };
-		array_view his(ah);
+		array_view his(ah);//对话列表
 		TalkMessageVM().TalkHistory().ReplaceAll(his);
 	}
 
@@ -173,13 +174,13 @@ namespace winrt::BiBi::implementation
 #pragma endregion
 
 
-	void MainPage::ClickHandler(IInspectable const&, RoutedEventArgs const&)
-	{
-		// 启动Udp客户端
-		//auto re = StartServer();
-		WorkerClient.AnnounceAsync(GetUID());
-		//Announce();
-	}
+	//void MainPage::ClickHandler(IInspectable const&, RoutedEventArgs const&)
+	//{
+	//	// 启动Udp客户端
+	//	//auto re = StartServer();
+	//	WorkerClient.AnnounceAsync(GetUID());
+	//	//Announce();
+	//}
 	winrt::Windows::Foundation::IAsyncAction MainPage::FindPeer()
 	{
 		auto out = co_await WorkerClient.GetTargetStream(MulticastHost, Port);
@@ -259,4 +260,44 @@ namespace winrt::BiBi::implementation
 		//OutputDebugString(msgReceived.c_str());
 		//OutputDebugString(L"\n");
 	}
+}
+
+
+void winrt::BiBi::implementation::MainPage::Send_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::RoutedEventArgs const& e)
+{
+	/*
+	const std::array<BiBi::TalkMessage, 2> ah{ make<BiBi::implementation::TalkMessage>(L"A",L"Hello!"),
+			make<BiBi::implementation::TalkMessage>(L"B",L"Bye.") };
+	array_view his(ah);//对话列表
+	TalkMessageVM().TalkHistory().ReplaceAll(his);
+
+	*/
+
+				//Step1:先把文本框里的数据加进TalkHistory
+
+	//步骤：
+	// 1.把textbox里的数据取出到a
+	//2.ahh中的数据转换成append函数需要的类型
+	//3.append
+
+	//array_view his(ahh);
+
+	//const winrt::Windows::UI::Xaml::Controls::TextBox xx;
+	const winrt::BiBi::TalkMessage x;
+	//const winrt::param::hstring a; 传给textbox的类型
+	winrt::hstring a;
+
+	// 1.把textbox里的数据取出到a 
+	a=contentTextBox().Text();//参数类型：const winrt::param::hstring
+
+	//2.ahh中的数据转换成append函数需要的类型
+	x.Content(a);
+
+	//3.append
+	TalkMessageVM().TalkHistory().Append(x);//append的类型：const winrt::BiBi::TalkMessage
+
+					//Step2:把文本框里的数据置空
+	const winrt::param::hstring emp; //传给textbox的类型
+	contentTextBox().Text(emp);
+	
 }
