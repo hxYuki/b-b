@@ -18,9 +18,11 @@ import wave
 #     ret, frame = aa.read()
 #     cv2.imshow("a",frame)
 #     cv2.waitKey(1)
+
 class Video_Client(threading.Thread):
     # 构造函数
     def __init__(self ,ip, port, level, version):
+
         # 线程初始化
         threading.Thread.__init__(self)
         self.setDaemon(True)
@@ -32,11 +34,13 @@ class Video_Client(threading.Thread):
         self.fx = 1 / (self.interval + 1)
         if self.fx < 0.3:
             self.fx = 0.3
+
         # ipv4和ipv6
         if version == 4:
             self.sock = socket(AF_INET, SOCK_STREAM)
         else:
             self.sock = socket(AF_INET6, SOCK_STREAM)
+
         # opencv打开摄像头函数
         self.cap = cv2.VideoCapture(0)
     # 析构函数
@@ -45,7 +49,9 @@ class Video_Client(threading.Thread):
         self.cap.release()
     def run(self):
         print("VEDIO client starts...")
-        while True:# 断线重连
+        
+        # 断线重连
+        while True:
             try:
                 self.sock.connect(self.ADDR)
                 break

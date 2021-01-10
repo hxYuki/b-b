@@ -40,26 +40,32 @@ def SetSocket():
         d+=host.encode()
         d+=struct.pack(">H", port)
         return d
+
     host = host_en.get()
     if host is None:
         tkinter.messagebox.showinfo('提示', 'Host设置错误！')
         return
+
     hs = host.split(":")
     if len(hs) != 2:
         tkinter.messagebox.showinfo('提示', 'Host设置错误！')
         return
+
     if socks5 is not None:
         ss = socks5.split(":")
         if len(ss) != 2:
             tkinter.messagebox.showinfo('提示', '代理设置错误！')
             return
+
         soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         soc.connect((ss[0], int(ss[1])))
         soc.sendall(struct.pack(">BB", 5, 0))
         recv = soc.recv(2)
+
         if recv[1] != 0:
             tkinter.messagebox.showinfo('提示', '代理回应错误！')
             return
+
         if re.match(r'^\d+?\.\d+?\.\d+?\.\d+?:\d+$', host) is None:
             # host 域名访问
             hand = byhost(hs[0], int(hs[1]))
@@ -70,6 +76,7 @@ def SetSocket():
             port = int(hs[1])
             hand = byipv4(ip, port)
             soc.sendall(hand)
+
         # 代理回应
         rcv = b''
         while len(rcv)!=10:
@@ -96,11 +103,14 @@ def ShowProxy():
         if socks5 == "":
             socks5 = None
         pr.destroy()
+
     pr = tkinter.Toplevel(root)
     s5v = tkinter.StringVar()
     s5_lab = tkinter.Label(pr, text="Socks5 Host:")
+
     s5_en = tkinter.Entry(pr, show=None, font=('Arial', 14), textvariable=s5v)
     s5_btn = tkinter.Button(pr, text="OK", command=set_s5_addr)
+
     s5_lab.grid(row=0, column=0, padx=10, pady=10, ipadx=0, ipady=0)
     s5_en.grid(row=0, column=1, padx=10, pady=10, ipadx=40, ipady=0)
     s5_btn.grid(row=1, column=0, padx=10, pady=10, ipadx=30, ipady=0)
@@ -121,8 +131,10 @@ def ShowScreen():
 
 val = tkinter.StringVar()
 host_lab = tkinter.Label(root, text="Host:")
+
 host_en = tkinter.Entry(root, show=None, font=('Arial', 14), textvariable=val)
 sca_lab = tkinter.Label(root, text="Scale:")
+
 sca = tkinter.Scale(root, from_=10, to=100, orient=tkinter.HORIZONTAL, length=100,
                     showvalue=100, resolution=0.1, tickinterval=50, command=SetScale)
 proxy_btn = tkinter.Button(root, text="Proxy", command=ShowProxy)
@@ -132,6 +144,7 @@ host_lab.grid(row=0, column=0, padx=10, pady=10, ipadx=0, ipady=0)
 host_en.grid(row=0, column=1, padx=0, pady=0, ipadx=40, ipady=0)
 sca_lab.grid(row=1, column=0, padx=10, pady=10, ipadx=0, ipady=0)
 sca.grid(row=1, column=1, padx=0, pady=0, ipadx=100, ipady=0)
+
 proxy_btn.grid(row=2, column=0, padx=0, pady=10, ipadx=30, ipady=0)
 show_btn.grid(row=2, column=1, padx=0, pady=10, ipadx=30, ipady=0)
 sca.set(100)
@@ -175,6 +188,7 @@ def BindEvents(canvas):
     # 键盘
     def KeyDown(e):
         return EventDo(struct.pack('>BBHH', e.keycode, 100, int(e.x/scale), int(e.y/scale)))
+    
     def KeyUp(e):
         return EventDo(struct.pack('>BBHH', e.keycode, 117, int(e.x/scale), int(e.y/scale)))
     canvas.bind(sequence="<KeyPress>", func=KeyDown)
