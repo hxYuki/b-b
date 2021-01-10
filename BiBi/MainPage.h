@@ -40,7 +40,7 @@ namespace winrt::BiBi::implementation
 
 #pragma region wrap
         void UpdateUserData();
-        void AddUserData(const Protocol::Message& msg, hstring const& addr);
+        void AddUserData(Protocol::Message msg, hstring addr);
 #pragma endregion
 
 

@@ -43,7 +43,12 @@ namespace winrt::BiBi::implementation
 				//}
 				////有回应再置在线
 				//FindPeer();
-				this->UpdateUserData();
+				this->Dispatcher().RunAsync(winrt::Windows::UI::Core::CoreDispatcherPriority::Normal,
+					winrt::Windows::UI::Core::DispatchedHandler([this]() {
+						//this->AddUserData(msg, args.RemoteAddress().ToString());
+						this->UpdateUserData();
+
+						}));
 			}, std::chrono::seconds(10));
 
 		// 耗时操作
@@ -62,7 +67,8 @@ namespace winrt::BiBi::implementation
 		//有回应再置在线
 		FindPeer();
 	}
-	void MainPage::AddUserData(const Protocol::Message& msg, hstring const& addr) {
+	void MainPage::AddUserData(Protocol::Message msg, hstring addr) {
+		//co_await winrt::resume_background();
 		//遍历查找置为在线
 		for (int i = 0; i < UserDataVM().UserList().Size(); i++) {
 			if (UserDataVM().UserList().GetAt(i).UserId() == msg.uid) {
@@ -72,7 +78,10 @@ namespace winrt::BiBi::implementation
 			}
 		}
 		//若没有找到则新增用户
-		UserDataVM().UserList().Append(make<BiBi::implementation::UserData>(msg.uid, msg.username, args.RemoteAddress().ToString(), L"", true));
+		auto v = make<BiBi::implementation::UserData>(msg.uid, msg.username, addr, L"", true);
+					
+		UserDataVM().UserList().Append(v);
+		
 	}
 	BiBi::TalkMessageViewModel MainPage::TalkMessageVM()
 	{
@@ -359,7 +368,18 @@ namespace winrt::BiBi::implementation
 			// 收到问候
 			else if (msg.content == Protocol::Kinds::PeerGreeting) {
 				// 添加至列表
-				AddUserData(msg, args.RemoteAddress().ToString());
+				//auto ptr = std::make_shared<hstring>(args.RemoteAddress().ToString());
+				////std::wstring_view(args.RemoteAddress().ToString())._Copy_s(ptr.get(), args.RemoteAddress().ToString().size(), args.RemoteAddress().ToString().size());
+				//Windows::System::Threading::ThreadPoolTimer::CreateTimer([&](winrt::Windows::System::Threading::ThreadPoolTimer const& source) {
+				//	auto str = ptr.get();
+				//	ptr.reset();
+
+				//	}, std::chrono::seconds(1));
+				Dispatcher().RunAsync(winrt::Windows::UI::Core::CoreDispatcherPriority::Normal,
+					winrt::Windows::UI::Core::DispatchedHandler([this, msg, args]() {
+						this->AddUserData(msg, args.RemoteAddress().ToString());
+
+						}));
 
 				//UserDataVM().UserList().Append(make<winrt::BiBi::UserData>(d));
 				//UserDataVM().UserList().Insert(msg.uid, make<UserData>(d));
@@ -384,7 +404,12 @@ namespace winrt::BiBi::implementation
 				/// 群组的用户名为用户列表
 				/// 群组的地址栏为空
 				/// // TODO: Wrap
-				UserDataVM().UserList().Append(make<UserData>(msg.uid + L"-"+ msg.username, msg.content, L"", L"", false));
+				/// Dispatcher().RunAsync(winrt::Windows::UI::Core::CoreDispatcherPriority::Normal,
+				winrt::Windows::UI::Core::DispatchedHandler([this, msg, args]() {
+					//this->AddUserData(msg, args.RemoteAddress().ToString());
+					this->UserDataVM().UserList().Append(make<UserData>(msg.uid + L"-"+ msg.username, msg.content, L"", L"", false));
+
+					});
 				break;
 			//case Protocol::MessageType::GroupAware:
 
