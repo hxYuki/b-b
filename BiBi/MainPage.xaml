@@ -7,11 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <StackPanel Orientation="Horizontal" 
-                Width="600"
-                Height="400">
-        <StackPanel >
-            <StackPanel Orientation="Horizontal">
+    <StackPanel Orientation="Horizontal" >
+        <StackPanel Orientation="Vertical">
                 <Grid Background="AliceBlue" Width="250">
                     <Border Padding="0 0 0 9" 
                             Background="AliceBlue"
@@ -23,52 +20,35 @@
                          TextAlignment="Center"
                         ></TextBlock>
                 </Grid>
-                
 
-            </StackPanel>
+
+                <!-- 叨叨下面的蓝色 横线 -->
             <Border Height="5" BorderBrush="White" BorderThickness="1,1,1,1" Background="CadetBlue" />
 
+            <ListView Margin="10,10,0,13" Name="listBox1" HorizontalAlignment="Left"
+                       VerticalAlignment="Top" Width="230" Height="300" ItemsSource="{x:Bind Path=UserDataVM.UserList}">
 
-
-            <ListBox Margin="10,10,0,13" Name="listBox1" HorizontalAlignment="Left"
-                       VerticalAlignment="Top" Width="230" Height="300">
-
-                <ListBoxItem>
-                    <!--
-                好友列表
-                -->
-                    <Grid DataContext="{}" Background="AntiqueWhite">
-                        <Grid.ColumnDefinitions>
-                            <!--
-                        新消息显示
-                        -->
-                            <ColumnDefinition Width="Auto"/>
-                            <!--
-                        头像
-                        -->
-                            <ColumnDefinition Width="Auto"/>
-
-                            <!--
-                        主要内容
-                        -->
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <!--
-                        新消息显示
-                        -->
-                        <Border x:Name="newMessage" Background="Red" Width="5"/>
-                        <!--
-                        头像
-                        -->
-                        <Border Grid.Column="1" Padding="8">
-                            <!--背景-->
-                            <Border Background="BurlyWood"
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="local:UserData">
+                        <!-- 好友列表  -->
+                            <Grid  Background="AntiqueWhite">
+                                <Grid.ColumnDefinitions>
+                                    <!--新消息显示 -->
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <!--新消息提示                        -->
+                                <Border x:Name="newMessage" Background="Red" Width="5"/>
+                                <!--                        头像                        -->
+                                <Border Grid.Column="1" Padding="8">
+                                    <!--背景-->
+                                    <Border Background="BurlyWood"
                                 Width="{Binding ActualHeight,RelativeSource={RelativeSource Self}}"
                                 CornerRadius="{Binding ActualHeight,RelativeSource={RelativeSource Self}}">
-                                <!--文字-->
-                                <TextBlock 
-                                Text="{Binding Initials}"
+                                        <!--头像文字-->
+                                        <TextBlock 
+                                Text="Head"
                                        
                                        VerticalAlignment="Center"
                                        HorizontalAlignment="Center"
@@ -76,105 +56,52 @@
                                        Foreground="Beige"
                                        FontFamily="d"/>
 
-                            </Border>
-                        </Border>
-                        <!--主要内容-->
-                        <Border Grid.Column="2" Padding="0 0 8 0" Width="200">
-                            <StackPanel 
-                        VerticalAlignment="Center">
-                                <!--Name-->
-                                <TextBlock Text="Luke" 
-                                   Foreground="CadetBlue"
-                                   FontFamily="d"
-                                   />
-                                <!--Message-->
-                                <TextBlock Text="This is awesome!"
-                                   Foreground="Gray"
-                                   FontSize="8"
-                                   TextTrimming="CharacterEllipsis"
-                                   FontFamily="Black"
-                                   
-                                   />
-                            </StackPanel>
-                        </Border>
-
-
-                    </Grid>
-                </ListBoxItem>
-                
-                <ListBoxItem>
-                    <!--
-                好友列表
-                -->
-                        <Grid DataContext="{}" Background="AntiqueWhite">
-                            <Grid.ColumnDefinitions>
-                                <!--
-                        新消息显示
-                        -->
-                                <ColumnDefinition Width="Auto"/>
-                                <!--
-                        头像
-                        -->
-                                <ColumnDefinition Width="Auto"/>
-
-                                <!--
-                        主要内容
-                        -->
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <!--
-                        新消息显示
-                        -->
-                            <Border x:Name="newMessage1" Background="Red" Width="5"/>
-                            <!--
-                        头像
-                        -->
-                            <Border Grid.Column="1" Padding="8">
-                                <!--背景-->
-                                <Border Background="BurlyWood"
-                                Width="{Binding ActualHeight,RelativeSource={RelativeSource Self}}"
-                                CornerRadius="{Binding ActualHeight,RelativeSource={RelativeSource Self}}">
-                                    <!--文字-->
-                                    <TextBlock 
-                                Text="{Binding Initials}"
-                                       
-                                       VerticalAlignment="Center"
-                                       HorizontalAlignment="Center"
-                                       FontSize="20"
-                                       Foreground="Beige"
-                                       FontFamily="d"/>
-
+                                    </Border>
                                 </Border>
-                            </Border>
-                            <!--主要内容-->
-                            <Border Grid.Column="2" Padding="0 0 8 0" Width="200">
-                                <StackPanel 
-                        VerticalAlignment="Center">
-                                    <!--Name-->
-                                    <TextBlock Text="Luke" 
+                                <!--主要内容-->
+                                <Border Grid.Column="2" Padding="0 0 8 0" Width="200" 
+                               >
+                                    <StackPanel 
+                        VerticalAlignment="Center"
+                                Orientation="Horizontal">
+                                        <StackPanel Orientation="Vertical">
+                                            <!--联系人名字-->
+                                            <TextBlock Text="{x:Bind Username}" 
                                    Foreground="CadetBlue"
                                    FontFamily="d"
                                    />
-                                    <!--Message-->
-                                    <TextBlock Text="This is awesome!"
+                                            <!--上次的聊天记录-->
+                                            <TextBlock Text="This is awesome!"
+                                               Width="120"
                                    Foreground="Gray"
                                    FontSize="8"
                                    TextTrimming="CharacterEllipsis"
                                    FontFamily="Black"
                                    
                                    />
-                                </StackPanel>
-                            </Border>
+                                        </StackPanel>
+                                        <Button Content="聊天" 
+                                        x:Name="Chat" 
+                                        Foreground="DarkGray"
+                                        FontWeight="Black"
+                                        FontSize="10"
+                                        Background="CadetBlue"
+                                        Height="28" Width="59"
+                    
+                                        Click="Chat_Click"/>
+
+                                    </StackPanel>
+                                </Border>
 
 
-                        </Grid>
-                </ListBoxItem>
+                            </Grid>
+
+                        </DataTemplate>
+
+                </ListView.ItemTemplate>
 
 
-            </ListBox>
-
-            
+            </ListView>
 
         </StackPanel>
         <Border Width="5" BorderBrush="White" BorderThickness="1,1,1,1" Background="CadetBlue" />
@@ -194,15 +121,15 @@
                         <DataTemplate x:DataType="local:TalkMessage">
                             <StackPanel Orientation="Vertical">
                                 <TextBlock Text="{x:Bind Path=UID}" IsTextSelectionEnabled="True" FontWeight="Bold"
-                                       FontSize="36" Foreground="Aqua"/>
+                                       FontSize="20" Foreground="Aqua"/>
                                 <TextBlock Text="{x:Bind Path=Content}" IsTextSelectionEnabled="True" Margin="40, 0, 0, 20"
-                                       FontSize="32" />
+                                       FontSize="16" />
                             </StackPanel>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
             </StackPanel>
-            
+
 
             <!--发送框 -->
             <TextBox HorizontalAlignment="Left"
@@ -220,7 +147,7 @@
                 Margin="20"
                 FocusVisualPrimaryThickness="10"
                 >
-               <!-- 发送按钮 -->
+                <!-- 发送按钮 -->
                 <Button Content="发送" 
                     x:Name="Send" 
                     Foreground="DarkGray"
@@ -233,4 +160,5 @@
             </RelativePanel>
         </StackPanel>
     </StackPanel>
+     
 </Page>

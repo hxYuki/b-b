@@ -9,6 +9,7 @@ namespace winrt::BiBi::implementation
     struct MainPage : MainPageT<MainPage>
     {
         MainPage();
+        void UpdateUserData(const winrt::Windows::System::Threading::ThreadPoolTimer& source);
         BiBi::TalkMessageViewModel TalkMessageVM();
         BiBi::UserDataViewModel UserDataVM();
 
@@ -58,7 +59,9 @@ namespace winrt::BiBi::implementation
 
         // 消息处理函数
         Windows::Foundation::IAsyncAction MessageReceived(Windows::Networking::Sockets::DatagramSocket const& /* sender */, Windows::Networking::Sockets::DatagramSocketMessageReceivedEventArgs const& args);
+        void Send_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::RoutedEventArgs const& e);
 #pragma endregion
+        void Chat_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::RoutedEventArgs const& e);
     };
 }
 

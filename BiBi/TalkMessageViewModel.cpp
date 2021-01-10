@@ -7,7 +7,7 @@ namespace winrt::BiBi::implementation
     TalkMessageViewModel::TalkMessageViewModel()
     {
         m_talkMessage = winrt::make<BiBi::implementation::TalkMessage>();
-        m_talkHistory = winrt::single_threaded_observable_vector<BiBi::TalkMessage>();
+        m_talkHistory = winrt::multi_threaded_observable_vector<BiBi::TalkMessage>();
     }
     BiBi::TalkMessage TalkMessageViewModel::TalkMessage()
     {
