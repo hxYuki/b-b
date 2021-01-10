@@ -64,48 +64,8 @@ namespace winrt::BiBi::implementation {
             throw webErrorStatus != Windows::Networking::Sockets::SocketErrorStatus::Unknown ? winrt::to_hstring((int32_t)webErrorStatus) : winrt::to_hstring(ex.to_abi());
         }
     }
-#pragma region Deprecated Code
-    /*void UdpClientStrt::MessageReceived(Windows::Networking::Sockets::DatagramSocket const& sender, Windows::Networking::Sockets::DatagramSocketMessageReceivedEventArgs const& args)
-    {*/
-    //// 读取数据
-    //DataReader dataReader{ args.GetDataReader() };
-    //winrt::hstring msgReceived{ dataReader.ReadString(dataReader.UnconsumedBufferLength()) };
-    //// 转换为wstring view
-    //auto ms = std::wstring_view(msgReceived);
-    //// 取协议头
-    //if (ms.substr(0, 3) != L"b&b")
-    //    return;
-    //// 取token
-    //auto token = ms.substr(4, 5);
-    //// 寻找token
-    //auto i = registry.find(hstring(token));
-    //if (i == registry.end())
-    //    return;
-
-    //// 对已注册函数进行调用
-    //for (const auto& cb : i->second) {
-    //    // 取消息内容，传入回调
-    //    cb(hstring(ms.substr(10)));
-    //}
-//}
-
-//winrt::hstring implementation::UdpClientStrt::RegisterCast(winrt::hstring token, Windows::Foundation::IAsyncAction callback)
-//{
-//    auto i = registry.find(token);
-
-//    // token存在，将函数附加到列表尾
-//    if (i != registry.end()) 
-//        //i->second.push_back(callback);
-//    
-//    // token不存在，初始化列表
-//    //registry[token] = { callback };
-//    return token;
-//}
-
-#pragma endregion
 
     Networker WorkerClient = Networker();
-
 
     Protocol::MessageBuilder::MessageBuilder(winrt::hstring const& uid, winrt::hstring const& username) : uid{ uid }, username{ username }
     {
@@ -183,6 +143,12 @@ namespace winrt::BiBi::implementation {
             return Protocol::Tokens::CallMake;
         case MessageType::MessageSend:
             return Protocol::Tokens::MessageSend;
+        case MessageType::GroupMessageSend:
+            return Protocol::Tokens::GroupMessageSend;
+        case MessageType::GroupInvite:
+            return Protocol::Tokens::GroupInvite;
+        case MessageType::GroupAware:
+            return Protocol::Tokens::GroupAware;
         default:
             return L"Error";
         }
@@ -198,7 +164,12 @@ namespace winrt::BiBi::implementation {
             return MessageType::MessageSend;
         else if (token == Protocol::Tokens::CallMake)
             return MessageType::CallMake;
-
+        else if (token == Protocol::Tokens::GroupMessageSend)
+            return MessageType::GroupMessageSend;
+        else if (token == Protocol::Tokens::GroupInvite)
+            return MessageType::GroupInvite;
+        else if (token == Protocol::Tokens::GroupAware)
+            return MessageType::GroupAware;
         else return MessageType::ErrorType;
     }
 
