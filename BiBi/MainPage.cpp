@@ -11,6 +11,7 @@ using namespace Windows::UI::Xaml;
 
 namespace winrt::BiBi::implementation
 {
+	hstring special_char = L"␔",special_char2=L"₱";
 	MainPage::MainPage()
 	{
 		InitializeComponent();
@@ -95,6 +96,7 @@ namespace winrt::BiBi::implementation
 		co_await mb.SendToStream(out, Protocol::MessageType::MessageSend,content);
 	}
 
+
 	Windows::Foundation::IAsyncAction MainPage::SendGroupMessage(winrt::hstring const& targetUid, winrt::hstring const& hostId, winrt::hstring const groupName, winrt::hstring const& content) {
 		winrt::hstring addr{ L"" };
 		// 找到uid对应的用户地址
@@ -126,12 +128,109 @@ namespace winrt::BiBi::implementation
 		co_await mb.SendToStream(out, Protocol::MessageType::GroupInvite, ul);
 	}
 
-	void MainPage::LoadHistory(const winrt::hstring& uid)
+
+	// 加载历史记录
+	Windows::Foundation::IAsyncAction MainPage::LoadHistory(const winrt::hstring& uid)
 	{
-		const std::array<BiBi::TalkMessage, 2> ah{ make<BiBi::implementation::TalkMessage>(L"A",L"Hello!"),
+		/*const std::array<BiBi::TalkMessage, 2> ah{ make<BiBi::implementation::TalkMessage>(L"A",L"Hello!"),
 			make<BiBi::implementation::TalkMessage>(L"B",L"Bye.") };
 		array_view his(ah);
-		TalkMessageVM().TalkHistory().ReplaceAll(his);
+		TalkMessageVM().TalkHistory().ReplaceAll(his);*/
+		// 应用数据目录
+		StorageFolder dataFolder = ApplicationData::Current().LocalFolder();
+		auto f = (co_await dataFolder.TryGetItemAsync(L"history\\" + uid + L".his")).as<StorageFile>();
+		if (f != nullptr) {
+			// 从文件中读取已有历史记录
+			auto res = co_await FileIO::ReadTextAsync(f);
+			// 此时需要将历史记录里的添加到需要显示的列表
+			auto file_history = std::wstring_view(res);
+			// 先分割每条消息，含uid+content
+			// 去掉开头的符号
+			file_history = file_history.substr(1, file_history.length() - 1);
+			// 找下一个符号位置
+			std::size_t found = file_history.find_first_of(special_char);
+			// 重复此过程
+			while (found != std::string::npos) {
+				// 再分割uid和content
+				//.  1  . 2
+				//0 1 2 3
+				std::size_t found2 = file_history.find_first_of(special_char2);
+				hstring _uid (file_history.substr(0, found2)),
+					_content(file_history.substr(found2 + 1, found - found2 - 1));
+
+				// 传入history
+				TalkMessageVM().TalkHistory().Append(make<BiBi::implementation::TalkMessage>(_uid,_content ));
+				// 去掉已提取部分+符号
+				file_history = file_history.substr(found + 1, file_history.length() - found - 1);
+				found = file_history.find_first_of(special_char);
+			}
+		}
+	}
+
+
+	// 已读消息
+	void MainPage::readMessage(hstring uid)
+	{
+		// 提取uid的未读消息
+		std::vector<TalkMessage> tm;
+		for (int i = 0; i < m_unreadMessage.size();i++) {
+			if (m_unreadMessage[i].UID() == uid) {
+				// 提取未读消息
+				tm.emplace_back(m_unreadMessage[i].UID(), m_unreadMessage[i].Content());
+				// 删除已加载未读消息
+				m_unreadMessage.erase(m_unreadMessage.begin()+i);
+				i--;
+			}
+		}
+		//// 将uid的消息编码成字符串
+		////编码后是这个样子        ␔uid₱Content1␔uid₱Content2␔uid₱Content3
+		//hstring uid_show_data;
+		//for (int i = 0; i < tm.size(); i++) {
+		//	uid_show_data = special_char + uid + special_char2 + tm[i].Content();
+		//}
+		if (current_uid == L"") {
+			// 先保存当前历史记录
+			saveHistory(current_uid);
+			// 清除当前窗口
+			TalkMessageVM().TalkHistory().Clear();
+		}
+		// 加载历史记录
+		LoadHistory(uid);
+		// 修改当前打开窗口
+		current_uid = uid;
+		for (int i = 0; i < tm.size(); i++) {
+			TalkMessageVM().TalkHistory().Append(make<BiBi::implementation::TalkMessage>
+				(	tm[i].UID()	,	tm[i].Content()		)
+			);
+		}
+	}
+	
+	
+	// 保存历史记录  就是将 TalkMessageVM().TalkHistory() 存入文件
+	Windows::Foundation::IAsyncAction MainPage::saveHistory(hstring uid)
+	{
+		hstring talk_history;
+		for (int i = 0; i < TalkMessageVM().TalkHistory().Size(); i++) {
+			talk_history = special_char + TalkMessageVM().TalkHistory().GetAt(i).UID() +
+				special_char2 + TalkMessageVM().TalkHistory().GetAt(i).Content();
+		}
+		// 应用数据目录
+		StorageFolder dataFolder = ApplicationData::Current().LocalFolder();
+		auto f = (co_await dataFolder.TryGetItemAsync(L"history\\" + uid + L".his")).as<StorageFile>();
+		if (f == nullptr) {
+			// 文件中没有历史记录
+			// 创建文件
+			f = co_await dataFolder.CreateFileAsync(L"history\\" + uid + L".his");
+		}
+		//else
+		//{
+		//	// 从文件中读取已有历史记录
+		//	auto res = co_await FileIO::ReadTextAsync(f);
+		//	// 已有历史记录和新未读消息拼接
+		//	talk_history = res + talk_history;
+		//}
+		// 保存uid的历史记录
+		co_await Windows::Storage::FileIO::WriteTextAsync(f, talk_history);
 	}
 
 	Windows::Foundation::IAsyncAction MainPage::DeviceInitOrRead()
@@ -174,8 +273,6 @@ namespace winrt::BiBi::implementation
 	}
 
 
-
-
 	void MainPage::ClickHandler(IInspectable const&, RoutedEventArgs const&)
 	{
 		// 启动Udp客户端
@@ -183,6 +280,8 @@ namespace winrt::BiBi::implementation
 		WorkerClient.AnnounceAsync(GetUID());
 		//Announce();
 	}
+	
+	
 	winrt::Windows::Foundation::IAsyncAction MainPage::FindPeer()
 	{
 		auto out = co_await WorkerClient.GetTargetStream(MulticastHost, Port);
@@ -191,6 +290,8 @@ namespace winrt::BiBi::implementation
 
 		co_await mb.SendToStream(out, Protocol::MessageType::Online, Protocol::Kinds::PeerSeeking);
 	}
+	
+	
 	winrt::Windows::Foundation::IAsyncAction MainPage::MessageReceived(Windows::Networking::Sockets::DatagramSocket const&, Windows::Networking::Sockets::DatagramSocketMessageReceivedEventArgs const& args)
 	{
 		auto uid = GetUID(), uname = GetUsername();

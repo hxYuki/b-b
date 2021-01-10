@@ -17,6 +17,8 @@ namespace winrt::BiBi::implementation
         BiBi::UserDataViewModel m_userDataVM;
         // 未读消息列表
         std::vector<TalkMessage> m_unreadMessage;
+        // 当前打开聊天窗口对方uid
+        hstring current_uid;
 
         const winrt::Windows::Networking::HostName MulticastHost{ L"229.2.2.9" };
         const winrt::hstring Port{ L"22229" };
@@ -47,7 +49,11 @@ namespace winrt::BiBi::implementation
 #pragma endregion
 
         // 载入聊天记录
-        void LoadHistory(const winrt::hstring& uid);
+        Windows::Foundation::IAsyncAction LoadHistory(const winrt::hstring& uid);
+        // 已读消息
+        void readMessage(hstring uid);
+        // 保存历史记录
+        Windows::Foundation::IAsyncAction saveHistory(hstring uid);
 
         // 读取或初始化设备标识
         // 用于区分用户
