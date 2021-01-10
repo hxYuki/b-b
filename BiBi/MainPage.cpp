@@ -418,7 +418,15 @@ void winrt::BiBi::implementation::MainPage::Send_Click(winrt::Windows::Foundatio
 					//Step2:把文本框里的数据置空
 	const winrt::param::hstring emp; //传给textbox的类型
 	contentTextBox().Text(emp);
-	
+	hstring ad;
+	for (int i = 0; i < UserDataVM().UserList().Size(); i++)
+	{
+		if (current_uid == UserDataVM().UserList().GetAt(i).UserId())
+		{
+			ad = UserDataVM().UserList().GetAt(i).Addr();
+		}
+	}
+	SendMessage(ad, a);
 }
 
 
@@ -429,7 +437,9 @@ void winrt::BiBi::implementation::MainPage::Chat_Click(winrt::Windows::Foundatio
 	//useid是不是也得改一下，这样发送信息就知道添加到谁的history里了
 
 	//
-	LoadHistory(GetUID());
+	auto x = GetUID();
+	readMessage(x);
+	
 
 
 

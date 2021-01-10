@@ -71,9 +71,9 @@ namespace winrt::BiBi::implementation
         // 页面卸载事件
         void OnNavigatingFrom(Windows::UI::Xaml::Navigation::NavigatingCancelEventArgs const& args);
         //void PageUnloadedHandler(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::Navigation::NavigatingCancelEventArgs const& args);
-        
-#pragma endregion
+        void Send_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::RoutedEventArgs const& e);
         void Chat_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::RoutedEventArgs const& e);
+#pragma endregion
     };
 }
 
