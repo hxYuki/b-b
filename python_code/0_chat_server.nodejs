@@ -1,0 +1,47 @@
+
+var ws = require('nodejs-websocket');
+var fs = require("fs");
+var strip = new Array('1','2','3');
+var PORT = 8003;
+var onlinenum=0;
+function reportonlinenum(){
+    broadcast('                            :在线:'+onlinenum);
+    }
+function broadcast(str) {
+    server.connections.forEach(function(connection) {
+        connection.sendText(str);
+        });
+    }
+var server = ws.createServer(function(conn){
+    onlinenum++;
+    // broadcast('           _有新成员加入聊天室_:当前在线'+onlinenum);
+    conn.on("text",function(str){
+        strip=str.split(',');
+        if(strip[0]=="onlykeyforip"){
+            fs.writeFile('logs.txt',strip[1]+strip[2]+"\n",{flag:'a',encoding:'utf-8',mode:'0666'},function(err){
+                if(err){
+                    console.log("can not record logs!  error");
+                }
+           });
+        }else{
+        broadcast(str);
+        fs.writeFile('logs.txt',str+"\n",{flag:'a',encoding:'utf-8',mode:'0666'},function(err){
+            if(err){
+                ;
+            }
+       }) ;
+        console.log(str);
+    }
+        });
+    conn.on("close",function(code,reason){
+        onlinenum--;
+        // broadcast('           _一位成员离开了聊天室_当前在线'+onlinenum);
+        console.log("connection closed");
+        });
+    conn.on("error",function(err){
+        console.log(err)
+    });
+}).listen(PORT);
+
+console.log('websocket server listening on port ' + PORT);
+setInterval(reportonlinenum,10000);

@@ -59,6 +59,8 @@ namespace winrt::BiBi::implementation
 		// 测试： 载入聊天记录
 		//LoadHistory(L"");
 	}
+	
+	
 	void MainPage::UpdateUserData() {
 		//先置离线
 		for (int i = 0; i < UserDataVM().UserList().Size(); i++) {
@@ -67,8 +69,9 @@ namespace winrt::BiBi::implementation
 		//有回应再置在线
 		FindPeer();
 	}
-	void MainPage::AddUserData(Protocol::Message msg, hstring addr) {
-		//co_await winrt::resume_background();
+	
+	
+	void MainPage::AddUserData(const Protocol::Message& msg, hstring const& addr) {
 		//遍历查找置为在线
 		for (int i = 0; i < UserDataVM().UserList().Size(); i++) {
 			if (UserDataVM().UserList().GetAt(i).UserId() == msg.uid) {
@@ -78,26 +81,29 @@ namespace winrt::BiBi::implementation
 			}
 		}
 		//若没有找到则新增用户
-		auto v = make<BiBi::implementation::UserData>(msg.uid, msg.username, addr, L"", true);
-					
-		UserDataVM().UserList().Append(v);
-		
+		OutputDebugString(msg.uid.c_str());
+		UserDataVM().UserList().Append(make<BiBi::implementation::UserData>(msg.uid, msg.username, addr, L"", true));
 	}
+	
+	
 	BiBi::TalkMessageViewModel MainPage::TalkMessageVM()
 	{
 		return m_talkMessageVM;
 	}
 
+	
 	BiBi::UserDataViewModel MainPage::UserDataVM()
 	{
 		return m_userDataVM;
 	}
 
+	
 	winrt::hstring MainPage::GetUID()
 	{
 		return m_uId;
 	}
 
+	
 	void MainPage::SetUID(const winrt::hstring& UID)
 	{
 		// 不允许后续更改UID
@@ -107,16 +113,19 @@ namespace winrt::BiBi::implementation
 
 	}
 
+	
 	winrt::hstring MainPage::GetUsername()
 	{
 		return m_username;
 	}
 
+	
 	void MainPage::SetUsername(winrt::hstring const& value)
 	{
 		m_username = value;
 	}
 
+	
 	// 发送消息
 	Windows::Foundation::IAsyncAction MainPage::SendMessage(winrt::hstring hostname,winrt::hstring content)
 	{
@@ -147,6 +156,8 @@ namespace winrt::BiBi::implementation
 		co_await mb.SendToStream(out, Protocol::MessageType::GroupMessageSend, content);
 	}
 	
+
+
 	Windows::Foundation::IAsyncAction MainPage::GroupInvite(winrt::hstring const& hostname, winrt::hstring const& groupName, std::vector<winrt::hstring> const& users) {
 		Windows::Networking::HostName host{ hostname };
 		auto out = co_await WorkerClient.GetTargetStream(host, Port);
@@ -265,6 +276,7 @@ namespace winrt::BiBi::implementation
 		co_await Windows::Storage::FileIO::WriteTextAsync(f, talk_history);
 	}
 
+
 	Windows::Foundation::IAsyncAction MainPage::DeviceInitOrRead()
 	{
 		// 应用数据目录
@@ -305,7 +317,6 @@ namespace winrt::BiBi::implementation
 	}
 
 
-
 	void MainPage::ClickHandler(IInspectable const&, RoutedEventArgs const&)
 	{
 		// 启动Udp客户端
@@ -324,6 +335,7 @@ namespace winrt::BiBi::implementation
 		co_await mb.SendToStream(out, Protocol::MessageType::Online, Protocol::Kinds::PeerSeeking);
 	}
 	
+
 	// 页面卸载，保存数据
 	void MainPage::OnNavigatingFrom(Windows::UI::Xaml::Navigation::NavigatingCancelEventArgs const& args) {
 		//保存当前打开的窗口				其他窗口在切换时已经保存
@@ -334,11 +346,13 @@ namespace winrt::BiBi::implementation
 
 	}
 
+
 	void MainPage::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventArgs const& args)
 	{
 		OutputDebugString(L"Page Loaded\n");
 	}
 	
+
 	winrt::Windows::Foundation::IAsyncAction MainPage::MessageReceived(Windows::Networking::Sockets::DatagramSocket const&, Windows::Networking::Sockets::DatagramSocketMessageReceivedEventArgs const& args)
 	{
 		auto uid = GetUID(), uname = GetUsername();
@@ -355,15 +369,15 @@ namespace winrt::BiBi::implementation
 		switch (msg.type)
 		{
 			case Protocol::MessageType::Online:
-			// 收到其他用户上线消息
-			if (msg.content == Protocol::Kinds::PeerSeeking) {
-				//// 添加至列表
-				//UserDataVM().UserList().Append(make<BiBi::implementation::UserData>(msg.uid, msg.username, args.RemoteAddress().ToString(), L"", true));
+					// 收到其他用户上线消息
+					if (msg.content == Protocol::Kinds::PeerSeeking) {
+						//// 添加至列表
+						//UserDataVM().UserList().Append(make<BiBi::implementation::UserData>(msg.uid, msg.username, args.RemoteAddress().ToString(), L"", true));
 
-				// 发送问候
-				auto out = co_await WorkerClient.GetTargetStream(args.RemoteAddress(), Port);
-				mb.SendToStream(out, Protocol::MessageType::Online, Protocol::Kinds::PeerGreeting);
-			}
+						// 发送问候
+						auto out = co_await WorkerClient.GetTargetStream(args.RemoteAddress(), Port);
+						mb.SendToStream(out, Protocol::MessageType::Online, Protocol::Kinds::PeerGreeting);
+					}
 
 			// 收到问候
 			else if (msg.content == Protocol::Kinds::PeerGreeting) {
@@ -381,11 +395,11 @@ namespace winrt::BiBi::implementation
 
 						}));
 
-				//UserDataVM().UserList().Append(make<winrt::BiBi::UserData>(d));
-				//UserDataVM().UserList().Insert(msg.uid, make<UserData>(d));
+						//UserDataVM().UserList().Append(make<winrt::BiBi::UserData>(d));
+						//UserDataVM().UserList().Insert(msg.uid, make<UserData>(d));
 
-			}
-			break;
+					}
+					break;
 			case Protocol::MessageType::Offline:
 
 				break;
@@ -404,12 +418,12 @@ namespace winrt::BiBi::implementation
 				/// 群组的用户名为用户列表
 				/// 群组的地址栏为空
 				/// // TODO: Wrap
-				/// Dispatcher().RunAsync(winrt::Windows::UI::Core::CoreDispatcherPriority::Normal,
+				Dispatcher().RunAsync(winrt::Windows::UI::Core::CoreDispatcherPriority::Normal,
 				winrt::Windows::UI::Core::DispatchedHandler([this, msg, args]() {
 					//this->AddUserData(msg, args.RemoteAddress().ToString());
 					this->UserDataVM().UserList().Append(make<UserData>(msg.uid + L"-"+ msg.username, msg.content, L"", L"", false));
 
-					});
+					}));
 				break;
 			//case Protocol::MessageType::GroupAware:
 
@@ -420,7 +434,6 @@ namespace winrt::BiBi::implementation
 		//OutputDebugString(L"\n");
 	}
 }
-
 
 void winrt::BiBi::implementation::MainPage::Send_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::RoutedEventArgs const& e)
 {
