@@ -26,23 +26,16 @@ namespace winrt::BiBi::implementation
 
 		// 注册处理函数
 		WorkerClient.RegisterCastProcessAsync(Protocol::Tokens::OnlineAnnouncement, this, &MainPage::MessageReceived);
+		UserDataVM().UserList().Append(make<UserData>(L"1234", L"LiMing",        L"1.png",     L"1.png",      true));
 
 		// 延迟操作
 		Windows::System::Threading::ThreadPoolTimer::CreateTimer([&](winrt::Windows::System::Threading::ThreadPoolTimer const& source) {
 			FindPeer();
-
+			//                            UserData(String userId, String username, String addr, String avatar, Boolean online);
 			}, std::chrono::seconds(1));
 		//循环广播在线信息
-		Windows::System::Threading::ThreadPoolTimer::CreatePeriodicTimer(
-			[&](winrt::Windows::System::Threading::ThreadPoolTimer const& source)
-				{
-				//先置离线
-					for (int i = 0; i < UserDataVM().UserList().Size(); i++) {
-							UserDataVM().UserList().GetAt(i).Online(false);
-					}
-					//有回应再置在线
-					FindPeer();
-				}, std::chrono::seconds(10));
+		/*Windows::System::Threading::ThreadPoolTimer::CreatePeriodicTimer(
+			&MainPage::UpdateUserData, std::chrono::seconds(10));*/
 
 		// 耗时操作
 		/*Windows::System::Threading::ThreadPool::RunAsync([&]() {
@@ -51,6 +44,14 @@ namespace winrt::BiBi::implementation
 
 		// 测试： 载入聊天记录
 		LoadHistory(L"");
+	}
+	void MainPage::UpdateUserData(const winrt::Windows::System::Threading::ThreadPoolTimer& source) {
+		//先置离线
+		for (int i = 0; i < UserDataVM().UserList().Size(); i++) {
+			UserDataVM().UserList().GetAt(i).Online(false);
+		}
+		//有回应再置在线
+		FindPeer();
 	}
 	BiBi::TalkMessageViewModel MainPage::TalkMessageVM()
 	{
@@ -378,4 +379,68 @@ namespace winrt::BiBi::implementation
 		//OutputDebugString(msgReceived.c_str());
 		//OutputDebugString(L"\n");
 	}
+}
+
+
+void winrt::BiBi::implementation::MainPage::Send_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::RoutedEventArgs const& e)
+{
+	/*
+	const std::array<BiBi::TalkMessage, 2> ah{ make<BiBi::implementation::TalkMessage>(L"A",L"Hello!"),
+			make<BiBi::implementation::TalkMessage>(L"B",L"Bye.") };
+	array_view his(ah);//对话列表
+	TalkMessageVM().TalkHistory().ReplaceAll(his);
+
+	*/
+
+				//Step1:先把文本框里的数据加进TalkHistory
+
+	//步骤：
+	// 1.把textbox里的数据取出到a
+	//2.ahh中的数据转换成append函数需要的类型
+	//3.append
+
+	//array_view his(ahh);
+
+	//const winrt::Windows::UI::Xaml::Controls::TextBox xx;
+	const winrt::BiBi::TalkMessage x;
+	//const winrt::param::hstring a; 传给textbox的类型
+	winrt::hstring a;
+
+	// 1.把textbox里的数据取出到a 
+	a=contentTextBox().Text();//参数类型：const winrt::param::hstring
+
+	//2.ahh中的数据转换成append函数需要的类型
+	x.Content(a);
+
+	//3.append
+	TalkMessageVM().TalkHistory().Append(x);//append的类型：const winrt::BiBi::TalkMessage
+
+					//Step2:把文本框里的数据置空
+	const winrt::param::hstring emp; //传给textbox的类型
+	contentTextBox().Text(emp);
+	hstring ad;
+	for (int i = 0; i < UserDataVM().UserList().Size(); i++)
+	{
+		if (current_uid == UserDataVM().UserList().GetAt(i).UserId())
+		{
+			ad = UserDataVM().UserList().GetAt(i).Addr();
+		}
+	}
+	SendMessage(ad, a);
+}
+
+
+void winrt::BiBi::implementation::MainPage::Chat_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::RoutedEventArgs const& e)
+{
+	//Step1：把usid 对应的人的MessageHistory找出来
+	//Step2：把his的内容显示到右边的屏幕上
+	//useid是不是也得改一下，这样发送信息就知道添加到谁的history里了
+
+	//
+	auto x = GetUID();
+	readMessage(x);
+	
+
+
+
 }

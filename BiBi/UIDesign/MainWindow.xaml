@@ -1,0 +1,160 @@
+﻿<Window x:Class="UIDesign.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UIDesign"
+        mc:Ignorable="d"
+        
+        Title="MainWindow" Height="450" Width="800">
+
+    <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Vertical ">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Width="230" Height="32" 
+                         FontSize="20" FontWeight="DemiBold" FontStretch="Medium"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" 
+                         Text="叨  叨"
+                         TextAlignment="Center"
+                         
+                        ></TextBlock>
+
+            </StackPanel>
+            <Border Height="5" BorderBrush="White" BorderThickness="1,1,1,1" Background="Blue" />
+            
+
+            <Border Height="5" BorderBrush="White" BorderThickness="1,1,1,1" Background="Blue" />
+
+            
+            <ListBox Margin="10,10,0,13" Name="listBox1" HorizontalAlignment="Left"
+                       VerticalAlignment="Top" Width="230" Height="200">
+                <ListBoxItem>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="2.png"/>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock>百度网盘</TextBlock>
+                            <TextBlock Height="30" Background="AliceBlue">最快的下载工具</TextBlock>
+                            <TextBlock x:Name="text3" Margin="5,8,0,0"
+                                       FontStyle="Normal"
+                                       FontStretch="SemiExpanded"
+                                       FontSize="15"
+                                       FontWeight="Black"
+                                       />
+                        </StackPanel>
+                        <Button Content="Call  " Name="Call" 
+                                Height="40" Width="40" 
+                                Click="Call_Click"></Button>
+                        
+
+                    </StackPanel>
+                </ListBoxItem>
+
+                <ListBoxItem>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="2.png"/>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock>百度网盘</TextBlock>
+                            <TextBlock Height="30" Background="AliceBlue">最快的下载工具</TextBlock>
+                            <TextBlock x:Name="text1" Margin="5,8,0,0"
+                                       FontStyle="Normal"
+                                       FontStretch="SemiExpanded"
+                                       FontSize="15"
+                                       FontWeight="Black"
+                                       />
+                        </StackPanel>
+                        <Button Content="Call  " Name="Call1" 
+                                Height="40" Width="40" 
+                                Click="Call1_Click"></Button>
+
+
+                    </StackPanel>
+                </ListBoxItem>
+                
+                <ListBoxItem Content="Orange Juice"></ListBoxItem>
+                <ListBoxItem Content="Milk"></ListBoxItem>
+                <ListBoxItem Content="Iced Tea"></ListBoxItem>
+                <ListBoxItem Content="Mango Shake">
+                    
+                </ListBoxItem>
+            </ListBox>
+
+            <TextBox Height="23" HorizontalAlignment="Left" Margin="8,14,0,0"
+                 Name="textBox1" VerticalAlignment="Top" Width="127" />
+            <Button Height="23" Margin="140,14,0,0" Name="button1" VerticalAlignment="Top"
+                HorizontalAlignment="Left" Width="76" >
+                Add Item
+            </Button>
+            
+        </StackPanel>
+        <Border Width="5" BorderBrush="White" BorderThickness="1,1,1,1" Background="Blue" />
+        <StackPanel Orientation="Vertical" Width="400">
+            <StackPanel Orientation="Horizontal" Height="30">
+                
+                <Image Source="2.png" Height="20" Width="20" Stretch="Uniform"></Image>
+                <TextBlock Foreground="Blue" 
+                           HorizontalAlignment="Center" VerticalAlignment="Center" >百度网盘</TextBlock>
+                <Image Source="3.png"></Image>
+            </StackPanel>
+            <Border Height="5" BorderBrush="White" BorderThickness="1,1,1,1" Background="Blue" />
+            <!-- 对话框 -->
+                <ListBox Background="Blue">
+                    <ListBoxItem>
+                        <Grid>
+                            <!--Speech bubble rectangle-->
+                            <Border 
+                            CornerRadius="7"
+                                Padding="15"
+                            Background="AliceBlue"/>
+
+                            <!--message text-->
+                        <TextBlock 
+                               Grid.Row="0"
+                               Grid.Column="0"
+                               VerticalAlignment="Center"
+                               TextWrapping="Wrap"
+                               Foreground="BlueViolet"
+                               FontFamily="10"
+                               Text=" This char app is awesomeeeee "
+                               />
+                    </Grid>
+                    </ListBoxItem>
+
+                <ListBoxItem>
+                    <Grid HorizontalAlignment="Right">
+                        <!--Speech bubble rectangle-->
+                        <Border 
+                            CornerRadius="7"
+                                Padding="15"
+                            Background="AliceBlue"/>
+
+                        <!--message text-->
+                        <TextBlock 
+                               Grid.Row="0"
+                               Grid.Column="0"
+                               VerticalAlignment="Center"
+                               TextWrapping="Wrap"
+                               Foreground="BlueViolet"
+                               FontFamily="10"
+                               Text=" This char app is awesomeeeee "
+                               />
+                    </Grid>
+                </ListBoxItem>
+
+            </ListBox>
+                <!--对话框-->
+            <!--发送框 -->
+            <TextBox HorizontalAlignment="Left" 
+                     VerticalAlignment="Top"
+                     Margin="8,14,0,0"
+                     Name="textBox2" 
+                     Height="100"
+                     Width="200"
+                     Text="xxx"
+                       />
+            <Button Content="send " 
+                    Name="Send" 
+                                Height="40" Width="40" 
+                                Click="Send_Click"></Button>
+        </StackPanel>
+    </StackPanel>
+</Window>
