@@ -26,7 +26,7 @@ namespace winrt::BiBi::implementation
 
 		// 注册处理函数
 		WorkerClient.RegisterCastProcessAsync(Protocol::Tokens::OnlineAnnouncement, this, &MainPage::MessageReceived);
-		//UserDataVM().UserList().Append(make<UserData>(L"1234", L"LiMing",        L"1.png",     L"1.png",      true));
+		UserDataVM().UserList().Append(make<UserData>(L"1234", L"LiMing",        L"1.png",     L"1.png",      true));
 
 		//// 延迟操作
 		//Windows::System::Threading::ThreadPoolTimer::CreateTimer([&](winrt::Windows::System::Threading::ThreadPoolTimer const& source) {
@@ -71,7 +71,7 @@ namespace winrt::BiBi::implementation
 	}
 	
 	
-	void MainPage::AddUserData(const Protocol::Message& msg, hstring const& addr) {
+	void MainPage::AddUserData(Protocol::Message msg, hstring addr) {
 		//遍历查找置为在线
 		for (int i = 0; i < UserDataVM().UserList().Size(); i++) {
 			if (UserDataVM().UserList().GetAt(i).UserId() == msg.uid) {
@@ -231,7 +231,7 @@ namespace winrt::BiBi::implementation
 		//for (int i = 0; i < tm.size(); i++) {
 		//	uid_show_data = special_char + uid + special_char2 + tm[i].Content();
 		//}
-		if (current_uid == L"") {
+		if (current_uid != L"") {
 			// 先保存当前历史记录
 			saveHistory(current_uid);
 			// 清除当前窗口
@@ -488,9 +488,10 @@ void winrt::BiBi::implementation::MainPage::Chat_Click(winrt::Windows::Foundatio
 	//Step1：把usid 对应的人的MessageHistory找出来
 	//Step2：把his的内容显示到右边的屏幕上
 	//useid是不是也得改一下，这样发送信息就知道添加到谁的history里了
-
+	auto b{ sender.as<Windows::UI::Xaml::Controls::Button>() };
 	//
-	auto x = GetUID();
+	auto x = 
+	 b.Parent().as<Windows::UI::Xaml::Controls::StackPanel>().Children().GetAt(0).as<Windows::UI::Xaml::Controls::StackPanel>().Children().GetAt(0).as<Windows::UI::Xaml::Controls::TextBlock>().Text();
 	readMessage(x);
 	
 

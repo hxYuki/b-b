@@ -62,26 +62,27 @@
                                 <Border Grid.Column="2" Padding="0 0 8 0" Width="200" 
                                >
                                     <StackPanel 
-                        VerticalAlignment="Center"
-                                Orientation="Horizontal">
+                                        VerticalAlignment="Center"
+                                        Orientation="Horizontal">
                                         <StackPanel Orientation="Vertical">
                                             <!--联系人名字-->
-                                            <TextBlock Text="{x:Bind Username}" 
-                                   Foreground="CadetBlue"
-                                   FontFamily="d"
-                                   />
-                                            <!--上次的聊天记录-->
+                                            <TextBlock Text="{x:Bind UserId}" 
+                                                   Foreground="CadetBlue"
+                                                   FontFamily="d"
+                                                   />   
+                                        <!--上次的聊天记录-->
                                             <TextBlock Text="This is awesome!"
-                                               Width="120"
-                                   Foreground="Gray"
-                                   FontSize="8"
-                                   TextTrimming="CharacterEllipsis"
-                                   FontFamily="Black"
+                                                           Width="120"
+                                                           Foreground="Gray"
+                                                           FontSize="8"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           FontFamily="Black"
                                    
-                                   />
+                                               />
                                         </StackPanel>
                                         <Button Content="聊天" 
                                         x:Name="Chat" 
+                                                
                                         Foreground="DarkGray"
                                         FontWeight="Black"
                                         FontSize="10"
@@ -99,7 +100,6 @@
                         </DataTemplate>
 
                 </ListView.ItemTemplate>
-
 
             </ListView>
 
