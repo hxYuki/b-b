@@ -14,6 +14,7 @@ namespace winrt::BiBi::implementation
 	hstring special_char = L"␔",special_char2=L"₱";
 	MainPage::MainPage()
 	{
+		//OnNavigatedFrom({ &MainPage::PageUnloadedHandler });
 		InitializeComponent();
 
 		
@@ -272,88 +273,6 @@ namespace winrt::BiBi::implementation
 		}
 	}
 
-	//int MainPage::StartServer()
-	//{
-	//    /*try
-	//    {*/
-	//        OutputDebugString(L"excuted");
-	//        // 收到数据报回调函数
-	//        this->m_serverDatagramSocket.MessageReceived({ this, &MainPage::MessageReceived });
-
-	//        // 开始监听
-	//        this->m_serverDatagramSocket.BindServiceNameAsync(L"22229");
-
-	//        // 加入组播组
-	//        this->m_serverDatagramSocket.JoinMulticastGroup(winrt::Windows::Networking::HostName(L"229.2.2.9"));
-
-	//        return 1;
-	//    /*}
-	//    catch (winrt::hresult_error const& ex)
-	//    {
-	//        Windows::Networking::Sockets::SocketErrorStatus webErrorStatus{ Windows::Networking::Sockets::SocketError::GetStatus(ex.to_abi()) };
-	//        throw webErrorStatus != Windows::Networking::Sockets::SocketErrorStatus::Unknown ? winrt::to_hstring((int32_t)webErrorStatus) : winrt::to_hstring(ex.to_abi());
-	//    }*/
-	//}
-
-	//void MainPage::MessageReceived(Windows::Networking::Sockets::DatagramSocket const&, Windows::Networking::Sockets::DatagramSocketMessageReceivedEventArgs const& args)
-	//{
-	//    // 读取数据
-	//    DataReader dataReader{ args.GetDataReader() };
-
-	//    winrt::hstring msgReceived{ dataReader.ReadString(dataReader.UnconsumedBufferLength()) };
-
-	//    // 使用对话框显示收到的消息
-	//    winrt::Windows::UI::Xaml::Controls::ContentDialog notify;
-	//    notify.Title(box_value(L"New message"));
-	//    notify.Content(box_value(msgReceived));
-	//    notify.CloseButtonText(L"OK");
-	//    // 显示对话框
-	//    notify.ShowAsync();
-	//}
-
-#pragma endregion
-
-
-	//int MainPage::StartServer()
-	//{
-	//    /*try
-	//    {*/
-	//        OutputDebugString(L"excuted");
-	//        // 收到数据报回调函数
-	//        this->m_serverDatagramSocket.MessageReceived({ this, &MainPage::MessageReceived });
-
-	//        // 开始监听
-	//        this->m_serverDatagramSocket.BindServiceNameAsync(L"22229");
-
-	//        // 加入组播组
-	//        this->m_serverDatagramSocket.JoinMulticastGroup(winrt::Windows::Networking::HostName(L"229.2.2.9"));
-
-	//        return 1;
-	//    /*}
-	//    catch (winrt::hresult_error const& ex)
-	//    {
-	//        Windows::Networking::Sockets::SocketErrorStatus webErrorStatus{ Windows::Networking::Sockets::SocketError::GetStatus(ex.to_abi()) };
-	//        throw webErrorStatus != Windows::Networking::Sockets::SocketErrorStatus::Unknown ? winrt::to_hstring((int32_t)webErrorStatus) : winrt::to_hstring(ex.to_abi());
-	//    }*/
-	//}
-
-	//void MainPage::MessageReceived(Windows::Networking::Sockets::DatagramSocket const&, Windows::Networking::Sockets::DatagramSocketMessageReceivedEventArgs const& args)
-	//{
-	//    // 读取数据
-	//    DataReader dataReader{ args.GetDataReader() };
-
-	//    winrt::hstring msgReceived{ dataReader.ReadString(dataReader.UnconsumedBufferLength()) };
-
-	//    // 使用对话框显示收到的消息
-	//    winrt::Windows::UI::Xaml::Controls::ContentDialog notify;
-	//    notify.Title(box_value(L"New message"));
-	//    notify.Content(box_value(msgReceived));
-	//    notify.CloseButtonText(L"OK");
-	//    // 显示对话框
-	//    notify.ShowAsync();
-	//}
-
-#pragma endregion
 
 
 	void MainPage::ClickHandler(IInspectable const&, RoutedEventArgs const&)
@@ -374,6 +293,20 @@ namespace winrt::BiBi::implementation
 		co_await mb.SendToStream(out, Protocol::MessageType::Online, Protocol::Kinds::PeerSeeking);
 	}
 	
+	// 页面卸载，保存数据
+	void MainPage::OnNavigatingFrom(Windows::UI::Xaml::Navigation::NavigatingCancelEventArgs const& args) {
+		//保存当前打开的窗口				其他窗口在切换时已经保存
+		//saveHistory(current_uid);
+		OutputDebugString(L"Page Unloading\n");
+		// 保存用户列表
+		// TODO:
+
+	}
+
+	void MainPage::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventArgs const& args)
+	{
+		OutputDebugString(L"Page Loaded\n");
+	}
 	
 	winrt::Windows::Foundation::IAsyncAction MainPage::MessageReceived(Windows::Networking::Sockets::DatagramSocket const&, Windows::Networking::Sockets::DatagramSocketMessageReceivedEventArgs const& args)
 	{
@@ -429,6 +362,7 @@ namespace winrt::BiBi::implementation
 				break;
 			case Protocol::MessageType::GroupMessageSend:
 				m_unreadMessage.emplace_back(msg.username, msg.content); // TODO: 群聊需要发送人ID字段
+				break;
 			case Protocol::MessageType::GroupInvite:
 				/// 添加群组 
 				/// 群组ID为 “创建者ID-群组名”

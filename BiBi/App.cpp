@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 
 #include "App.h"
 #include "MainPage.h"
@@ -108,6 +108,8 @@ void App::OnLaunched(LaunchActivatedEventArgs const& e)
 void App::OnSuspending([[maybe_unused]] IInspectable const& sender, [[maybe_unused]] SuspendingEventArgs const& e)
 {
     // Save application state and stop any background activity
+
+    OutputDebugString(L"App Ended\n");
 }
 
 /// <summary>

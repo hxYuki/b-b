@@ -64,6 +64,13 @@ namespace winrt::BiBi::implementation
 
         // 消息处理函数
         Windows::Foundation::IAsyncAction MessageReceived(Windows::Networking::Sockets::DatagramSocket const& /* sender */, Windows::Networking::Sockets::DatagramSocketMessageReceivedEventArgs const& args);
+        
+        // 页面加载事件
+        void OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventArgs const& args);
+        // 页面卸载事件
+        void OnNavigatingFrom(Windows::UI::Xaml::Navigation::NavigatingCancelEventArgs const& args);
+        //void PageUnloadedHandler(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::Navigation::NavigatingCancelEventArgs const& args);
+        
 #pragma endregion
     };
 }
