@@ -6,24 +6,24 @@
 namespace winrt::BiBi::implementation
 {
     BiBi::implementation::TalkMessage::TalkMessage() {}
-    TalkMessage::TalkMessage(const TalkMessage& value) : m_username{ value.m_username }, m_content{value.m_content }
+    TalkMessage::TalkMessage(const TalkMessage& value) : m_uID{ value.m_uID }, m_content{value.m_content }
     {
 
     }
-    BiBi::implementation::TalkMessage::TalkMessage(winrt::hstring const& username, winrt::hstring const& content) : m_username{username}, m_content{content}
+    BiBi::implementation::TalkMessage::TalkMessage(winrt::hstring const& username, winrt::hstring const& content) : m_uID{username}, m_content{content}
     {
     }
 
-    hstring TalkMessage::Username()
+    hstring TalkMessage::UID()
     {
-        return m_username;
+        return m_uID;
     }
-    void TalkMessage::Username(hstring const& value)
+    void TalkMessage::UID(hstring const& value)
     {
-        if (m_username != value)
+        if (m_uID != value)
         {
-            m_username = value;
-            m_propertyChanged(*this, Windows::UI::Xaml::Data::PropertyChangedEventArgs{ L"Username" });
+            m_uID = value;
+            m_propertyChanged(*this, Windows::UI::Xaml::Data::PropertyChangedEventArgs{ L"UID" });
         }
     }
     hstring TalkMessage::Content()

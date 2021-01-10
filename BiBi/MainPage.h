@@ -23,6 +23,8 @@ namespace winrt::BiBi::implementation
         // 用户ID
         winrt::hstring m_uId{L""};
         void SetUID(const winrt::hstring&);
+        // 用户名
+        winrt::hstring m_username{ L"" };
 
         
         //Protocol::MessageBuilder messageBuilder;
@@ -30,9 +32,20 @@ namespace winrt::BiBi::implementation
     public:
         winrt::hstring GetUID();
 
+        winrt::hstring GetUsername();
+        void SetUsername(winrt::hstring const& value);
 
+#pragma region 网络通信相关
+        // 发现域内用户
+        winrt::Windows::Foundation::IAsyncAction FindPeer();
         // 发送消息
         Windows::Foundation::IAsyncAction SendMessage(winrt::hstring hostname, winrt::hstring content);
+        // 发送群组消息
+        Windows::Foundation::IAsyncAction SendGroupMessage(winrt::hstring const& uid, winrt::hstring const& hostId, winrt::hstring const groupName, winrt::hstring const& content);;
+        // 群组邀请
+        Windows::Foundation::IAsyncAction GroupInvite(winrt::hstring const& hostname, winrt::hstring const& groupNum, std::vector<winrt::hstring> const& users);
+#pragma endregion
+
         // 载入聊天记录
         void LoadHistory(const winrt::hstring& uid);
 
@@ -40,13 +53,12 @@ namespace winrt::BiBi::implementation
         // 用于区分用户
         Windows::Foundation::IAsyncAction DeviceInitOrRead();
 
-        // 发现域内用户
-        winrt::Windows::Foundation::IAsyncAction FindPeer();
-
+#pragma region 事件绑定处理
         void ClickHandler(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::RoutedEventArgs const& args);
 
         // 消息处理函数
         Windows::Foundation::IAsyncAction MessageReceived(Windows::Networking::Sockets::DatagramSocket const& /* sender */, Windows::Networking::Sockets::DatagramSocketMessageReceivedEventArgs const& args);
+#pragma endregion
     };
 }
 
