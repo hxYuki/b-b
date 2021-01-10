@@ -14,7 +14,7 @@
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="local:TalkMessage">
                         <StackPanel Orientation="Vertical">
-                            <TextBlock Text="{x:Bind Path=Username}" IsTextSelectionEnabled="True" FontWeight="Bold"
+                            <TextBlock Text="{x:Bind Path=UID}" IsTextSelectionEnabled="True" FontWeight="Bold"
                                        FontSize="36" Foreground="Aqua"/>
                             <TextBlock Text="{x:Bind Path=Content}" IsTextSelectionEnabled="True" Margin="40, 0, 0, 20"
                                        FontSize="32" />
