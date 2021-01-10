@@ -155,11 +155,11 @@ namespace winrt::BiBi::implementation
 				//.  1  . 2
 				//0 1 2 3
 				std::size_t found2 = file_history.find_first_of(special_char2);
+				hstring _uid (file_history.substr(0, found2)),
+					_content(file_history.substr(found2 + 1, found - found2 - 1));
+
 				// 传入history
-				TalkMessageVM().TalkHistory().Append(make<BiBi::implementation::TalkMessage>
-					(file_history.substr(0, found2),
-						file_history.substr(found2+1, found-found2-1))
-				);
+				TalkMessageVM().TalkHistory().Append(make<BiBi::implementation::TalkMessage>(_uid,_content ));
 				// 去掉已提取部分+符号
 				file_history = file_history.substr(found + 1, file_history.length() - found - 1);
 				found = file_history.find_first_of(special_char);
@@ -169,7 +169,7 @@ namespace winrt::BiBi::implementation
 
 
 	// 已读消息
-	Windows::Foundation::IAsyncAction MainPage::readMessage(hstring uid)
+	void MainPage::readMessage(hstring uid)
 	{
 		// 提取uid的未读消息
 		std::vector<TalkMessage> tm;
@@ -182,18 +182,22 @@ namespace winrt::BiBi::implementation
 				i--;
 			}
 		}
-		// 将uid的消息编码成字符串
-		//编码后是这个样子        ␔uid₱Content1␔uid₱Content2␔uid₱Content3
-		hstring uid_show_data;
-		for (int i = 0; i < tm.size(); i++) {
-			uid_show_data = special_char + uid + special_char2 + tm[i].Content();
+		//// 将uid的消息编码成字符串
+		////编码后是这个样子        ␔uid₱Content1␔uid₱Content2␔uid₱Content3
+		//hstring uid_show_data;
+		//for (int i = 0; i < tm.size(); i++) {
+		//	uid_show_data = special_char + uid + special_char2 + tm[i].Content();
+		//}
+		if (current_uid == L"") {
+			// 先保存当前历史记录
+			saveHistory(current_uid);
+			// 清除当前窗口
+			TalkMessageVM().TalkHistory().Clear();
 		}
-		// 先保存当前历史记录
-		saveHistory(current_uid);
-		// 清除当前窗口
-		TalkMessageVM().TalkHistory().Clear();
 		// 加载历史记录
 		LoadHistory(uid);
+		// 修改当前打开窗口
+		current_uid = uid;
 		for (int i = 0; i < tm.size(); i++) {
 			TalkMessageVM().TalkHistory().Append(make<BiBi::implementation::TalkMessage>
 				(	tm[i].UID()	,	tm[i].Content()		)
@@ -207,7 +211,7 @@ namespace winrt::BiBi::implementation
 	{
 		hstring talk_history;
 		for (int i = 0; i < TalkMessageVM().TalkHistory().Size(); i++) {
-			talk_history = special_char + TalkMessageVM().TalkHistory().GetAt(i).Username() +
+			talk_history = special_char + TalkMessageVM().TalkHistory().GetAt(i).UID() +
 				special_char2 + TalkMessageVM().TalkHistory().GetAt(i).Content();
 		}
 		// 应用数据目录
@@ -216,15 +220,15 @@ namespace winrt::BiBi::implementation
 		if (f == nullptr) {
 			// 文件中没有历史记录
 			// 创建文件
-			auto f = co_await dataFolder.CreateFileAsync(L"history\\" + uid + L".his");
+			f = co_await dataFolder.CreateFileAsync(L"history\\" + uid + L".his");
 		}
-		else
-		{
-			// 从文件中读取已有历史记录
-			auto res = co_await FileIO::ReadTextAsync(f);
-			// 已有历史记录和新未读消息拼接
-			talk_history = res + talk_history;
-		}
+		//else
+		//{
+		//	// 从文件中读取已有历史记录
+		//	auto res = co_await FileIO::ReadTextAsync(f);
+		//	// 已有历史记录和新未读消息拼接
+		//	talk_history = res + talk_history;
+		//}
 		// 保存uid的历史记录
 		co_await Windows::Storage::FileIO::WriteTextAsync(f, talk_history);
 	}
