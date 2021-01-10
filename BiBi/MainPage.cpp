@@ -71,7 +71,7 @@ namespace winrt::BiBi::implementation
 	}
 	
 	
-	void MainPage::AddUserData(const Protocol::Message& msg, hstring const& addr) {
+	void MainPage::AddUserData(Protocol::Message msg, hstring addr) {
 		//遍历查找置为在线
 		for (int i = 0; i < UserDataVM().UserList().Size(); i++) {
 			if (UserDataVM().UserList().GetAt(i).UserId() == msg.uid) {
