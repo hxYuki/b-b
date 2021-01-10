@@ -5,7 +5,7 @@
 namespace winrt::BiBi::implementation
 {
     UserDataViewModel::UserDataViewModel() {
-        m_userList = winrt::single_threaded_observable_vector<BiBi::UserData>();
+        m_userList = winrt::multi_threaded_observable_vector<BiBi::UserData>();
     }
     BiBi::UserData UserDataViewModel::UserData()
     {

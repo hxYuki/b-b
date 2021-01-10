@@ -9,7 +9,7 @@ namespace winrt::BiBi::implementation
     struct MainPage : MainPageT<MainPage>
     {
         MainPage();
-        void UpdateUserData();
+        
         BiBi::TalkMessageViewModel TalkMessageVM();
         BiBi::UserDataViewModel UserDataVM();
 
@@ -37,6 +37,12 @@ namespace winrt::BiBi::implementation
 
         winrt::hstring GetUsername();
         void SetUsername(winrt::hstring const& value);
+
+#pragma region wrap
+        void UpdateUserData();
+        void AddUserData(const Protocol::Message& msg, hstring const& addr);
+#pragma endregion
+
 
 #pragma region 网络通信相关
         // 发现域内用户
