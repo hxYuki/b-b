@@ -3,7 +3,7 @@
     runtimeclass TalkMessage : Windows.UI.Xaml.Data.INotifyPropertyChanged
     {
         TalkMessage();
-        String Username;
+        String UID;
         String Content;
     }
 }
