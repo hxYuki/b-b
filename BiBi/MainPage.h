@@ -58,7 +58,7 @@ namespace winrt::BiBi::implementation
         // 载入聊天记录
         Windows::Foundation::IAsyncAction LoadHistory(const winrt::hstring& uid);
         // 已读消息
-        void readMessage(hstring uid);
+        Windows::Foundation::IAsyncAction readMessage(hstring uid);
         // 保存历史记录
         Windows::Foundation::IAsyncAction saveHistory(hstring uid);
 
